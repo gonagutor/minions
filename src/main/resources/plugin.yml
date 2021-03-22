@@ -1,0 +1,7 @@
+name: Minions
+version: ${project.version}
+main: com.gonagutor.minions.Minions
+api-version: 1.16
+authors: [ gonagutor ]
+description: This plugin adds minions to your server
+website: gonagutor.com
