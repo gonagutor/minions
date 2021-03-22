@@ -10,11 +10,12 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.ArmorStand.LockType;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitTask;
 
 import lombok.Getter;
 import lombok.Setter;
 
-abstract class BaseMinion {
+public class BaseMinion {
 	@Getter @Setter private ArmorStand minion;
 	@Getter private Location minionLocation;
 
@@ -25,6 +26,7 @@ abstract class BaseMinion {
 	@Getter @Setter private ItemStack tool;
 
 	@Getter @Setter private int level;
+	@Getter @Setter private BukkitTask minionTask;
 	public BaseMinion (Location newMinionLoc) {
 		this.minionLocation = newMinionLoc;
 	}
@@ -54,9 +56,9 @@ abstract class BaseMinion {
 	public Set<Block> getInfluenceBlocks() {
 		int minionRadius = 2;
 		Set<Block> blocks = new HashSet<>();
-        for (float sqx = 0; sqx < minionRadius * 2; sqx++) {
+        for (float sqx = 0; sqx < minionRadius * 2 + 1; sqx++) {
             float x = minionRadius - sqx;
-            for (float sqz = 0; sqz < minionRadius * 2; sqz++) {
+            for (float sqz = 0; sqz < minionRadius * 2 + 1; sqz++) {
                 float z = minionRadius - sqz;
                 Block block = new Location(
                     minionLocation.getWorld(),
