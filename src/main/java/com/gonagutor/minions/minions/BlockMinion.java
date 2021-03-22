@@ -22,19 +22,26 @@ public class BlockMinion extends BaseMinion {
 			Set<Block> inflBlocks = minion.getInfluenceBlocks();
 			for (Block block : inflBlocks) {
 				if (block.getType() == Material.AIR) {
+					minion.rotateMinionToLocation(block.getLocation());
 					block.setType(minion.getBlockType());
 					return;
 				}
 			}
-			Block b = (Block)inflBlocks.toArray()[(int)Math.floor(inflBlocks.size() * Math.random())];
-			b.setType(Material.AIR);
+			if (minion.getItems() < 64 * 3 * 5) {
+				Block b = (Block)inflBlocks.toArray()[(int)Math.floor(inflBlocks.size() * Math.random())];
+				minion.rotateMinionToLocation(b.getLocation());
+				b.setType(Material.AIR);
+				minion.setItems(minion.getItems() + 1);
+			}
 		}
 	}
 
-	public BlockMinion(Location minionLoc, Material block, int level) {
+	public BlockMinion(Location minionLoc, Material block, Material drop,int level, String minionKind) {
 		super(minionLoc);
 		this.setLevel(level);
+		this.setMenuTitle(minionKind + " level " + level);
 		this.blockType = block;
+		this.setMaterial(drop);
 		this.setMinionTask(new UpdateNeeded(this).runTaskTimer(
 			Bukkit.getPluginManager().getPlugin("Minions"),
 			40,

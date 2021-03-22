@@ -20,13 +20,42 @@ public class MinionInteractGui implements Listener {
 	private BaseMinion minion;
 
 	public MinionInteractGui(BaseMinion bm) {
-		inv = Bukkit.createInventory(null, 9, "Example");
-		initializeItems();
 		this.minion = bm;
+		inv = Bukkit.createInventory(null, 54, minion.getMenuTitle());
+		initializeItems();
 	}
 
 	public void initializeItems() {
-		inv.setItem(8, createGuiItem(Material.BEDROCK, "Delete Minion", "lore"));
+		for (int i = 0; i < 54; i++) {
+			inv.setItem(i, createGuiItem(Material.BLACK_STAINED_GLASS_PANE, ""));
+		}
+		int amount = minion.getItems();
+		for (int z = 0; z < 9 * 3; z += 9) {
+			for (int i = 21 + z; i < 26 + z; i++) {
+				if (amount > 0) {
+					if (amount / 64 > 0) {
+						inv.setItem(i, new ItemStack(minion.getMaterial(), 64));
+						amount -= 64;
+					} else {
+						inv.setItem(i, new ItemStack(minion.getMaterial(), amount));
+						amount = 0;
+					}
+				}
+				else
+					inv.setItem(i, createGuiItem(Material.WHITE_STAINED_GLASS_PANE, ""));
+			}
+		}
+		inv.setItem(3, createGuiItem(Material.REDSTONE_TORCH, "§e§lIdeal layout", "§7Click this item to", "§7show the ideal layout"));
+		inv.setItem(4, minion.getMinion().getEquipment().getHelmet());
+		inv.setItem(5, createGuiItem(Material.GOLD_INGOT, "§6§lView Recipe", "§7Click this item to", "§7view the recipe to make this minion"));
+		inv.setItem(10, createGuiItem(Material.LIME_STAINED_GLASS_PANE, "§2Skin slot"));
+		inv.setItem(19, createGuiItem(Material.ORANGE_STAINED_GLASS_PANE, "§3Smth slot"));
+		inv.setItem(28, createGuiItem(Material.BLUE_STAINED_GLASS_PANE, "§3Output slot"));
+		inv.setItem(37, createGuiItem(Material.YELLOW_STAINED_GLASS_PANE, "§eUpgrade slot"));
+		inv.setItem(46, createGuiItem(Material.YELLOW_STAINED_GLASS_PANE, "§eUpgrade slot"));
+		inv.setItem(48, createGuiItem(Material.CHEST, "§6§lPickup everything", "§7Click this item to", "§7pickup all the items and", "§7money from this minion"));
+		inv.setItem(50, createGuiItem(Material.DIAMOND, "§b§lUpgrade Minion", "§7Click this item to", "§7to upgrade this minion"));
+		inv.setItem(53, createGuiItem(Material.BEDROCK, "§c§lRemove Minion", "§7Click this item to", "§7pickup this minion"));
 	}
 
 	protected ItemStack createGuiItem(final Material material, final String name, final String... lore) {
@@ -48,7 +77,7 @@ public class MinionInteractGui implements Listener {
 		e.setCancelled(true);
 		final ItemStack clickedItem = e.getCurrentItem();
 		if (clickedItem == null || clickedItem.getType() == Material.AIR) return;
-		if (e.getRawSlot() == 8) {
+		if (e.getRawSlot() == 53) {
 			minion.getMinion().remove();
 			Bukkit.getScheduler().cancelTask(minion.getMinionTask().getTaskId());
 			e.getWhoClicked().closeInventory();

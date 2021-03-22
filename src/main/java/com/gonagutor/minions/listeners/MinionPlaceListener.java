@@ -22,7 +22,7 @@ public class MinionPlaceListener implements Listener {
 		if (e.getBlock().getType() != Material.PLAYER_HEAD) return;
 		e.setCancelled(true);
 		Location minionLocation = e.getBlock().getLocation().add(0.5, 0, 0.5);
-		BlockMinion minion = new BlockMinion(minionLocation, Material.DIAMOND_ORE, 5);
+		BlockMinion minion = new BlockMinion(minionLocation, Material.DIAMOND_ORE, Material.DIAMOND, 10, "Diamond Minion");
 		minion.setHead(e.getItemInHand());
 		minion.spawnMinion();
 		Bukkit.getPluginManager().registerEvents(new MinionRightClickListener(minionManager, minion), minionManager.getPlugin());

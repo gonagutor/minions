@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.EntityType;
@@ -11,6 +12,7 @@ import org.bukkit.entity.ArmorStand.LockType;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
+import org.bukkit.util.Vector;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -26,7 +28,11 @@ public class BaseMinion {
 	@Getter @Setter private ItemStack tool;
 
 	@Getter @Setter private int level;
+	@Getter @Setter private String menuTitle;
 	@Getter @Setter private BukkitTask minionTask;
+	@Getter @Setter private Material material;
+	@Getter @Setter private int items;
+	@Getter @Setter private long money;
 	public BaseMinion (Location newMinionLoc) {
 		this.minionLocation = newMinionLoc;
 	}
@@ -76,5 +82,19 @@ public class BaseMinion {
 			).getBlock());
         }
         return (blocks);
+	}
+
+	public void rotateMinionToLocation(Location lookHere) {
+		ArmorStand target = this.getMinion();
+
+		Vector direction = target.getLocation().toVector().subtract(lookHere.add(0.5, 0.5, 0.5).toVector()) .normalize();
+		double x = direction.getX();
+		double y = direction.getY();
+		double z = direction.getZ();
+
+		Location changed = target.getLocation().clone();
+		changed.setYaw(180 - (float) Math.toDegrees(Math.atan2(x, z)));
+		changed.setPitch(90 - (float) Math.toDegrees(Math.acos(y)));
+		target.teleport(changed);
 	}
 }
