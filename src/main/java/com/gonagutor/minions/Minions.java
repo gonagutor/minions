@@ -10,7 +10,7 @@ import lombok.Getter;
 import net.md_5.bungee.api.ChatColor;
 
 public final class Minions extends JavaPlugin {
-	@Getter private static String prefix = ChatColor.translateAlternateColorCodes('6', "&a[&6&lMinion&a] "); 
+	@Getter private static String prefix = ChatColor.translateAlternateColorCodes('&', "&a[&6&lMinion&a] "); 
 	@Override
 	public void onEnable() {
 		// Plugin startup logic
