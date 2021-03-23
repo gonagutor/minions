@@ -19,6 +19,7 @@ public class BlockMinion extends BaseMinion {
 
 		@Override
 		public void run() {
+			if (!minion.getMinion().getLocation().getChunk().isLoaded()) return;
 			Set<Block> inflBlocks = minion.getInfluenceBlocks();
 			for (Block block : inflBlocks) {
 				if (block.getType() == Material.AIR) {

@@ -17,7 +17,7 @@ import org.bukkit.util.Vector;
 import lombok.Getter;
 import lombok.Setter;
 
-public class BaseMinion {
+public class BaseMinion{
 	@Getter @Setter private ArmorStand minion;
 	@Getter private Location minionLocation;
 

@@ -1,0 +1,31 @@
+minions:
+  diamond:
+    ==: com.gonagutor.minions.configs.MinionData
+    item_name: §a§lDiamond minion
+    item_lore:
+      - §7Right click to place minion
+    minion_type: BLOCK_MINION
+    max_level: 10
+    minion_name: §aDiamond minion
+    drop_material: DIAMOND
+    block_material: DIAMOND_ORE
+    minion_color:
+      RED: 0
+      BLUE: 255
+      GREEN: 255
+    skull_owner: DangerourMtp
+  wood:
+    ==: com.gonagutor.minions.configs.MinionData
+    item_name: "&4&lOak minion"
+    item_lore:
+      - "&7Right click to place minion"
+    minion_type: BLOCK_MINION
+    max_level: 10
+    minion_name: "&4Oak minion"
+    drop_material: OAK_LOG
+    block_material: OAK_LOG
+    minion_color:
+      RED: 128
+      BLUE: 0
+      GREEN: 0
+    skull_owner: Technoblade
