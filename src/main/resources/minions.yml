@@ -29,3 +29,18 @@ minions:
       BLUE: 0
       GREEN: 0
     skull_owner: Technoblade
+  gold:
+    ==: com.gonagutor.minions.configs.MinionData
+    item_name: "&6&lGold minion"
+    item_lore:
+      - "&7Right click to place minion"
+    minion_type: BLOCK_MINION
+    max_level: 10
+    minion_name: "&4Gold minion"
+    drop_material: GOLD_ORE
+    block_material: GOLD_ORE
+    minion_color:
+      RED: 255
+      BLUE: 255
+      GREEN: 0
+    skull_owner: GoldOre

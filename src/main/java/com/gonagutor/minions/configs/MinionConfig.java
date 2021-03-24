@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Level;
@@ -33,7 +34,6 @@ public class MinionConfig {
 	public void reloadConfig() {
 		if (this.configFile == null)
 			this.configFile = new File(this.plugin.getDataFolder(), "minions.yml");
-
 		this.dataConfig = YamlConfiguration.loadConfiguration(this.configFile);
 		InputStream defaultStream = this.plugin.getResource("minions.yml");
 		if (defaultStream != null) {
@@ -71,9 +71,9 @@ public class MinionConfig {
 		for (String key : this.getConfig().getRoot().getKeys(true)) {
 			if (key.equals("minions")) continue;
 			MinionData mData = (MinionData) this.getConfig().get(key, MinionData.class);
-			if (mData == null) {
+			if (!mData.isDataValid()) {
 				wrongConfig(key);
-				return md;
+				return getAllMinionsInConfig();
 			}
 			md.add(mData);
 		}
@@ -81,15 +81,18 @@ public class MinionConfig {
 	}
 
 	public void addNewMinionToConfig(String branch, MinionData md) {
-		this.getConfig().set("minions." + branch, md);
+		this.getConfig().set("minions." + branch, md);;
 		this.saveConfig();
 		this.reloadConfig();
 	}
 
 	public void wrongConfig(String errorField) {
-		Bukkit.getConsoleSender().sendMessage(Minions.getPrefix() + ChatColor.RED + "A config error was found on minion \"" + errorField + ChatColor.WHITE + "\"\nThe config has been restored to the default config and a new file called minions_old.yml was created with your old config.\n Please fix this and try again");
+		Bukkit.getConsoleSender().sendMessage(Minions.getPrefix() + ChatColor.RED + "A config error was found on minion \"" + errorField + "\"");
+		Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "The config has been restored to the default config and a new file called minions_old.yml was created with your old config.");
+		Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "Please fix this and try again");
 		try {
-			Files.move(Path.of(this.plugin.getDataFolder().getAbsolutePath() + "/minions.yml"), Path.of(this.plugin.getDataFolder().getAbsolutePath() + "/minions_old.yml"));
+			Files.move(Path.of(this.plugin.getDataFolder().getAbsolutePath() + "/minions.yml"), Path.of(this.plugin.getDataFolder().getAbsolutePath() + "/minions_old.yml"), StandardCopyOption.REPLACE_EXISTING);
+			this.saveDefaultConfig();
 			this.reloadConfig();
 		} catch (Exception e) {
 			Bukkit.getConsoleSender().sendMessage("Error renaming config file. Mantaining old file. \nError stack trace: " + e.toString());

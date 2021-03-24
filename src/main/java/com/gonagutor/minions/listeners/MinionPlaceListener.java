@@ -1,6 +1,5 @@
 package com.gonagutor.minions.listeners;
 
-import com.gonagutor.minions.Minions;
 import com.gonagutor.minions.configs.MinionData;
 import com.gonagutor.minions.managers.MinionManager;
 import com.gonagutor.minions.minions.BlockMinion;
@@ -14,17 +13,15 @@ import org.bukkit.event.block.BlockPlaceEvent;
 
 public class MinionPlaceListener implements Listener {
 	private MinionManager minionManager;
-	private Minions minions;
-	public MinionPlaceListener(MinionManager mm, Minions mini)  {
+	public MinionPlaceListener(MinionManager mm)  {
 		this.minionManager = mm;
-		this.minions = mini;
 	}
 
 	@EventHandler
 	public void onSkullPlace(BlockPlaceEvent e) {
 		if (e.getItemInHand().getType() != Material.PLAYER_HEAD) return;
 		MinionData mData = null;
-		for (MinionData data: minions.getMinionList()) {
+		for (MinionData data: minionManager.getMinionList()) {
 			if (data.toSkull().getItemMeta().getDisplayName().equals(e.getItemInHand().getItemMeta().getDisplayName())) { 
 				mData = data;
 				break;

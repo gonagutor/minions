@@ -2,6 +2,7 @@ package com.gonagutor.minions.commands;
 
 import com.gonagutor.minions.Minions;
 import com.gonagutor.minions.configs.MinionData;
+import com.gonagutor.minions.managers.MinionManager;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -11,9 +12,9 @@ import org.bukkit.entity.Player;
 import net.md_5.bungee.api.ChatColor;
 
 public class MinionsCommand implements CommandExecutor {
-    private Minions plugin;
-    public MinionsCommand (Minions pl) {
-        this.plugin = pl;
+    private MinionManager minionManager;
+    public MinionsCommand (MinionManager mm) {
+        this.minionManager = mm;
     }
 
     private boolean sendHelpMessage(CommandSender sender) {
@@ -30,9 +31,15 @@ public class MinionsCommand implements CommandExecutor {
             return sendHelpMessage(sender);
         switch (args[0].toLowerCase()) {
             case "get":
-				if (sender instanceof Player)
-					((Player)sender).getInventory().addItem(((MinionData)plugin.getMinionList().toArray()[Integer.parseInt(args[1])]).toSkull());
-				else
+				if (sender instanceof Player) {
+                    try {
+                        MinionData mData = ((MinionData)minionManager.getMinionList().toArray()[Integer.parseInt(args[1])]);
+                        ((Player) sender).getInventory().addItem(mData.toSkull());
+                        ((Player) sender).sendMessage(Minions.getPrefix() + ChatColor.GREEN + "You have received a " + mData.getItemName());
+                    } catch (Exception e) {
+                        ((Player) sender).sendMessage(Minions.getPrefix() + ChatColor.RED + "The minion number " + args[1] + " does not exist");
+                    }
+                } else
 					sender.sendMessage("No puedes hacer eso desde la consola");
                 return (true);
 

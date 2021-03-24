@@ -57,7 +57,8 @@ public class MinionData implements ConfigurationSerializable{
 				(String)map.get("skull_owner")
 			);
 		} catch (ClassCastException e) {
-			return null;
+			Bukkit.getConsoleSender().sendMessage("ERRRRROR");
+			return new MinionData();
 		}
 	}
 
@@ -76,6 +77,11 @@ public class MinionData implements ConfigurationSerializable{
 			.build();
 	}
 
+	public Boolean isDataValid(){
+		if (this.blockMaterial != null && this.dropMaterial != null && this.itemName != null && this.leatherArmorColor != null)
+			return true;
+		return false;
+	}
 	public ItemStack toSkull() {
 		ItemStack item = new ItemStack(Material.PLAYER_HEAD, 1);
 		SkullMeta meta = (SkullMeta) item.getItemMeta();
