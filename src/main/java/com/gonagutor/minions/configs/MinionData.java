@@ -14,6 +14,7 @@ import org.bukkit.Material;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
+import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
 import lombok.AllArgsConstructor;
@@ -56,7 +57,7 @@ public class MinionData implements ConfigurationSerializable{
 				Color.deserialize((Map<String,Object>)map.get("minion_color")),
 				(String)map.get("skull_owner")
 			);
-		} catch (ClassCastException e) {
+		} catch (Exception e) {
 			Bukkit.getConsoleSender().sendMessage("ERRRRROR");
 			return new MinionData();
 		}
@@ -97,7 +98,31 @@ public class MinionData implements ConfigurationSerializable{
 	public BaseMinion toMinion(Location loc, int level) {
 		switch (minionType) {
 			case BLOCK_MINION:
-				return new BlockMinion(loc, this.blockMaterial, this.dropMaterial, level, minionName);
+				BlockMinion minion = new BlockMinion(loc, this.blockMaterial, this.dropMaterial, level, minionName);
+				if (leatherArmorColor != null) {
+					ItemStack itemHelmet = new ItemStack(Material.LEATHER_HELMET);
+					LeatherArmorMeta helmetMeta = (LeatherArmorMeta) itemHelmet.getItemMeta();
+					helmetMeta.setColor(this.leatherArmorColor);
+					itemHelmet.setItemMeta(helmetMeta);
+					ItemStack itemChest = new ItemStack(Material.LEATHER_CHESTPLATE);
+					LeatherArmorMeta chestMeta = (LeatherArmorMeta) itemChest.getItemMeta();
+					chestMeta.setColor(this.leatherArmorColor);
+					itemChest.setItemMeta(chestMeta);
+					ItemStack itemLegs = new ItemStack(Material.LEATHER_LEGGINGS);
+					LeatherArmorMeta legsMeta = (LeatherArmorMeta) itemLegs.getItemMeta();
+					legsMeta.setColor(this.leatherArmorColor);
+					itemLegs.setItemMeta(legsMeta);
+					ItemStack itemBoots = new ItemStack(Material.LEATHER_BOOTS);
+					LeatherArmorMeta bootsMeta = (LeatherArmorMeta) itemBoots.getItemMeta();
+					bootsMeta.setColor(this.leatherArmorColor);
+					itemBoots.setItemMeta(bootsMeta);
+
+					minion.setHead(itemHelmet);
+					minion.setChest(itemChest);
+					minion.setLegs(itemLegs);
+					minion.setBoots(itemBoots);
+				}
+				return minion;
 			default:
 				return null;
 		}

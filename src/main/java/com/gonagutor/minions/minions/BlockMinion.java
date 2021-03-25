@@ -23,6 +23,7 @@ public class BlockMinion extends BaseMinion {
 			Set<Block> inflBlocks = minion.getInfluenceBlocks();
 			for (Block block : inflBlocks) {
 				if (block.getType() == Material.AIR) {
+					minion.playOutAnimation();
 					minion.rotateMinionToLocation(block.getLocation());
 					block.setType(minion.getBlockType());
 					return;

@@ -3,6 +3,8 @@ package com.gonagutor.minions.minions;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.bukkit.Bukkit;
+import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -11,7 +13,9 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.ArmorStand.LockType;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
+import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
 
 import lombok.Getter;
@@ -28,6 +32,7 @@ public class BaseMinion{
 	@Getter @Setter private ItemStack tool;
 
 	@Getter @Setter private int level;
+	@Getter @Setter private Color color;
 	@Getter @Setter private String menuTitle;
 	@Getter @Setter private BukkitTask minionTask;
 	@Getter @Setter private Material material;
@@ -42,6 +47,7 @@ public class BaseMinion{
 		this.minion.setSmall(true);
 		this.minion.setInvulnerable(true);
 		this.minion.setGravity(false);
+		this.minion.setArms(true);
 		if (head != null)
 			minion.getEquipment().setHelmet(head);
 		if (chest != null)
@@ -96,5 +102,34 @@ public class BaseMinion{
 		changed.setYaw(180 - (float) Math.toDegrees(Math.atan2(x, z)));
 		changed.setPitch(90 - (float) Math.toDegrees(Math.acos(y)));
 		target.teleport(changed);
+	}
+
+	public void playOutAnimation() {
+		ArmorStand target = this.getMinion();
+		final class AnimateArm extends BukkitRunnable {
+			ArmorStand armorStand;
+			Boolean forward = true;
+			public AnimateArm (ArmorStand as) {
+				this.armorStand = as;
+			}
+
+			@Override
+			public void run() {
+				if (armorStand.getRightArmPose().getX() < -0.5)
+					forward = false;
+				if (armorStand.getRightArmPose().getX() > -0.1)
+					forward = true;
+
+				if (forward)
+					armorStand.setRightArmPose(armorStand.getRightArmPose().subtract(0.1, 0, 0));
+				else
+					armorStand.setRightArmPose(armorStand.getRightArmPose().add(0.1, 0, 0));
+			}
+		}
+		BukkitTask animation = new AnimateArm(target).runTaskTimer(Bukkit.getPluginManager().getPlugin("Minions"), 0, 1);
+		Bukkit.getScheduler().runTaskLater(Bukkit.getPluginManager().getPlugin("Minions"), () -> {
+			animation.cancel();
+			target.setLeftArmPose(new EulerAngle(0, 0, 0));
+		} , 40 * (10 / this.getLevel()));
 	}
 }

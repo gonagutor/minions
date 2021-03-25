@@ -1,5 +1,7 @@
 package com.gonagutor.minions.commands;
 
+import java.util.Set;
+
 import com.gonagutor.minions.Minions;
 import com.gonagutor.minions.configs.MinionData;
 import com.gonagutor.minions.managers.MinionManager;
@@ -19,9 +21,9 @@ public class MinionsCommand implements CommandExecutor {
 
     private boolean sendHelpMessage(CommandSender sender) {
         sender.sendMessage(ChatColor.GRAY + "==================== " + Minions.getPrefix() + "====================");
-        sender.sendMessage(ChatColor.GOLD + "/minions get " + ChatColor.GRAY + " - Iniciar la partida");
-        sender.sendMessage(ChatColor.GOLD + "/minions stopall " + ChatColor.GRAY + " - Terminar la partida");
-        sender.sendMessage(ChatColor.GOLD + "/minions help " + ChatColor.GRAY + " - Muestra esto");
+        sender.sendMessage(ChatColor.GOLD + "/minions get " + ChatColor.GRAY + " - Get an specific minion");
+        sender.sendMessage(ChatColor.GOLD + "/minions list " + ChatColor.GRAY + " - Get available minions");
+        sender.sendMessage(ChatColor.GOLD + "/minions help " + ChatColor.GRAY + " - Shows this");
         return (true);
     }
 
@@ -42,6 +44,22 @@ public class MinionsCommand implements CommandExecutor {
                 } else
 					sender.sendMessage("No puedes hacer eso desde la consola");
                 return (true);
+
+            case "list":
+                //TODO: Add available pages counter
+                Set<MinionData> minionList = minionManager.getMinionList();
+                if (args.length < 2) {
+                    sender.sendMessage(ChatColor.GREEN + "==========" + ChatColor.GRAY + " Available Minions " + ChatColor.GREEN + "==========");
+                    for (int i = 0; i < minionList.size() && i < 10; i++) {
+                        sender.sendMessage(ChatColor.GOLD + "" + i + " - " + ChatColor.RESET + ((MinionData) minionList.toArray()[i]).getItemName());
+                    }
+                    return true;
+                }
+                sender.sendMessage(ChatColor.GREEN + "==========" + ChatColor.GRAY + " Available Minions " + ChatColor.GREEN + "==========");
+                for (int i = (Integer.parseInt(args[1]) - 1) * 10; i < minionList.size() && i / 10 < 10; i++) {
+                    sender.sendMessage(ChatColor.GOLD + "" + i + " - " + ChatColor.RESET + ((MinionData) minionList.toArray()[i]).getItemName());
+                }
+                return true;
 
             case "help":
                 return sendHelpMessage(sender);
