@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.gonagutor.minions.Minions;
+import com.gonagutor.minions.configs.DataFile;
 import com.gonagutor.minions.configs.MinionConfig;
 import com.gonagutor.minions.configs.MinionData;
 import com.gonagutor.minions.minions.BaseMinion;
@@ -16,11 +17,14 @@ public class MinionManager {
 	@Getter private Minions plugin;
 	@Getter MinionConfig minionConfig;
 	@Getter Set<MinionData> minionList;
+	@Getter DataFile dataFile;
 
 	public MinionManager (Minions pl) {
 		this.plugin = pl;
 		this.minionConfig = new MinionConfig(this.plugin);
 		minionConfig.reloadConfig();
+		this.dataFile = new DataFile(this.plugin);
+		dataFile.reloadConfig();
 		this.minionList = minionConfig.getAllMinionsInConfig();
 	}
 }

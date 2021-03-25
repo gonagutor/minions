@@ -13,7 +13,6 @@ import java.util.logging.Level;
 
 import com.gonagutor.minions.Minions;
 
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -54,7 +53,7 @@ public class MinionConfig {
 		try {
 			this.getConfig().save(this.configFile);
 		} catch (IOException e) {
-			plugin.getLogger().log(Level.SEVERE, Minions.getPrefix() + "No se ha podido guardar el archivo en" + this.configFile, e);
+			plugin.getLogger().log(Level.SEVERE, Minions.getPrefix() + "File could not be saved in: " + this.configFile, e);
 		}
 	}
 
@@ -87,15 +86,15 @@ public class MinionConfig {
 	}
 
 	public void wrongConfig(String errorField) {
-		Bukkit.getConsoleSender().sendMessage(Minions.getPrefix() + ChatColor.RED + "A config error was found on minion \"" + errorField + "\"");
-		Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "The config has been restored to the default config and a new file called minions_old.yml was created with your old config.");
-		Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "Please fix this and try again");
+		this.plugin.getLogger().log(Level.SEVERE, Minions.getPrefix() + ChatColor.RED + "A config error was found on minion \"" + errorField + "\"");
+		this.plugin.getLogger().log(Level.SEVERE, ChatColor.RED + "The config has been restored to the default config and a new file called minions_old.yml was created with your old config.");
+		this.plugin.getLogger().log(Level.SEVERE, ChatColor.RED + "Please fix this and try again");
 		try {
 			Files.move(Path.of(this.plugin.getDataFolder().getAbsolutePath() + "/minions.yml"), Path.of(this.plugin.getDataFolder().getAbsolutePath() + "/minions_old.yml"), StandardCopyOption.REPLACE_EXISTING);
 			this.saveDefaultConfig();
 			this.reloadConfig();
 		} catch (Exception e) {
-			Bukkit.getConsoleSender().sendMessage("Error renaming config file. Mantaining old file. \nError stack trace: " + e.toString());
+			this.plugin.getLogger().log(Level.SEVERE, "Error renaming config file. Mantaining old file. \nError stack trace: " + e.toString());
 		}
 	}
 }
