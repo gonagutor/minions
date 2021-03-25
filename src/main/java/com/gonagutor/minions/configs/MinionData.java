@@ -36,6 +36,7 @@ public class MinionData implements ConfigurationSerializable{
 	@Getter private Color leatherArmorColor;
 	@Getter private String skullOwner;
 
+	@SuppressWarnings("unchecked")
 	public static MinionData deserialize(Map<String, Object> map) {
 		try {
 			List<String> lore = null;
@@ -83,6 +84,8 @@ public class MinionData implements ConfigurationSerializable{
 			return true;
 		return false;
 	}
+
+	@SuppressWarnings("deprecation")
 	public ItemStack toSkull() {
 		ItemStack item = new ItemStack(Material.PLAYER_HEAD, 1);
 		SkullMeta meta = (SkullMeta) item.getItemMeta();
