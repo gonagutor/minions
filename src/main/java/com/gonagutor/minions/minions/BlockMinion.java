@@ -2,6 +2,9 @@ package com.gonagutor.minions.minions;
 
 import java.util.Set;
 
+import com.gonagutor.minions.Minions;
+import com.gonagutor.minions.nms.PacketSender;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -32,6 +35,22 @@ public class BlockMinion extends BaseMinion {
 			if (minion.getItems() < 64 * 3 * 5) {
 				Block b = (Block)inflBlocks.toArray()[(int)Math.floor(inflBlocks.size() * Math.random())];
 				minion.rotateMinionToLocation(b.getLocation());
+				PacketSender packet = new PacketSender();
+				new BukkitRunnable(){
+					int status = 0;
+					@Override
+					public void run() {
+						if (status < 10) {
+							packet.sendPacket(b.getLocation(), status);
+							status++;
+						}
+						else {
+							packet.sendPacket(b.getLocation(), status);
+							status = 0;
+						}
+						
+					}
+				}.runTaskTimer(Minions.getPlugin(Minions.class), 0, 4);
 				b.setType(Material.AIR);
 				minion.setItems(minion.getItems() + 1);
 			}

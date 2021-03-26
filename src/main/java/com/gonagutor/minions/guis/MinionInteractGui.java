@@ -27,7 +27,7 @@ public class MinionInteractGui implements Listener {
 
 	public void initializeItems() {
 		for (int i = 0; i < 54; i++) {
-			inv.setItem(i, createGuiItem(Material.BLACK_STAINED_GLASS_PANE, ""));
+			inv.setItem(i, createGuiItem(Material.BLACK_STAINED_GLASS_PANE, " "));
 		}
 		int amount = minion.getItems();
 		for (int z = 0; z < 9 * 3; z += 9) {
@@ -42,7 +42,7 @@ public class MinionInteractGui implements Listener {
 					}
 				}
 				else
-					inv.setItem(i, createGuiItem(Material.WHITE_STAINED_GLASS_PANE, ""));
+					inv.setItem(i, createGuiItem(Material.WHITE_STAINED_GLASS_PANE, " "));
 			}
 		}
 		inv.setItem(3, createGuiItem(Material.REDSTONE_TORCH, "§e§lIdeal layout", "§7Click this item to", "§7show the ideal layout"));

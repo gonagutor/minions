@@ -1,3 +1,4 @@
+// To use urls you should upload the images to https://mineskin.org/ or find a way to sign them as mojang. (It is open source)
 minions:
   diamond:
     ==: com.gonagutor.minions.configs.MinionData

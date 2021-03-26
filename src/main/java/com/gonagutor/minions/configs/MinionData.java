@@ -87,12 +87,14 @@ public class MinionData implements ConfigurationSerializable{
 
 	@SuppressWarnings("deprecation")
 	public ItemStack toSkull() {
+		Boolean isUrl = skullOwner.contains("http://") || skullOwner.contains("https://");
 		ItemStack item = new ItemStack(Material.PLAYER_HEAD, 1);
+		if (isUrl) item = CustomSkull.skullFromImage(item, skullOwner);
 		SkullMeta meta = (SkullMeta) item.getItemMeta();
 
 		meta.setDisplayName(this.itemName);
 		meta.setLore(this.itemLore);
-		meta.setOwningPlayer(Bukkit.getOfflinePlayer(this.skullOwner));
+		if (!isUrl) meta.setOwningPlayer(Bukkit.getOfflinePlayer(this.skullOwner));
 		item.setItemMeta(meta);
 		return item;
 
