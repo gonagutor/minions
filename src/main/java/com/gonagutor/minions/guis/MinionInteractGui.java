@@ -2,10 +2,12 @@ package com.gonagutor.minions.guis;
 
 import java.util.Arrays;
 
+import com.gonagutor.minions.Minions;
 import com.gonagutor.minions.managers.MinionManager;
 import com.gonagutor.minions.minions.BaseMinion;
 
 import org.bukkit.Bukkit;
+import org.bukkit.EntityEffect;
 import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.EventHandler;
@@ -33,6 +35,7 @@ public class MinionInteractGui implements Listener {
 			inv.setItem(i, createGuiItem(Material.BLACK_STAINED_GLASS_PANE, " "));
 		}
 		int amount = minion.getItems();
+		int slots = 0;
 		for (int z = 0; z < 9 * 3; z += 9) {
 			for (int i = 21 + z; i < 26 + z; i++) {
 				if (amount > 0) {
@@ -44,8 +47,11 @@ public class MinionInteractGui implements Listener {
 						amount = 0;
 					}
 				}
-				else
+				else if (slots > minion.getLevel())
 					inv.setItem(i, createGuiItem(Material.WHITE_STAINED_GLASS_PANE, " "));
+				else
+					inv.setItem(i, new ItemStack(Material.AIR));
+				slots++;
 			}
 		}
 		inv.setItem(3, createGuiItem(Material.REDSTONE_TORCH, "§e§lIdeal layout", "§7Click this item to", "§7show the ideal layout"));
@@ -85,6 +91,29 @@ public class MinionInteractGui implements Listener {
 			Bukkit.getScheduler().cancelTask(minion.getMinionTask().getTaskId());
 			e.getWhoClicked().closeInventory();
 			e.getWhoClicked().getInventory().addItem(minion.getMinion().getEquipment().getHelmet());
+			return;
+		}
+
+		if (e.getRawSlot() >= 21 && e.getRawSlot() <= 44 && e.getClickedInventory().getItem(e.getRawSlot()).getType() == minion.getMinionData().getDropMaterial()) {
+			ItemStack itemStack = e.getClickedInventory().getItem(e.getRawSlot());
+			Boolean hasFreeSpace = false;
+			for (ItemStack space : e.getWhoClicked().getInventory().getStorageContents()) {
+				if (space == null) {
+					hasFreeSpace = true;
+					break;
+				}
+			}
+
+			if (hasFreeSpace) {
+				e.getWhoClicked().getInventory().addItem(itemStack);
+				minion.setItems(minion.getItems() - itemStack.getAmount());
+				initializeItems();
+				this.openInventory(e.getWhoClicked());
+			} else {
+				e.getWhoClicked().sendMessage(Minions.getPrefix() + "You don't have enought free space on your inventory");
+				e.getWhoClicked().playEffect(EntityEffect.VILLAGER_ANGRY);
+			}
+			return;
 		}
 	}
 
