@@ -31,8 +31,10 @@ public class MinionsCommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (args.length < 1)
             return sendHelpMessage(sender);
+        // TODO: Add a minion remover based on the type to clean the server
         switch (args[0].toLowerCase()) {
             case "get":
+                // TODO: I can use the JSONMinion... to get the MinionData based on the key to get the corresponding MinionData and call get skull to get the item
 				if (sender instanceof Player) {
                     try {
                         MinionData mData = ((MinionData)minionManager.getMinionList().toArray()[Integer.parseInt(args[1])]);

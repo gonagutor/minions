@@ -5,6 +5,7 @@ import java.util.Set;
 
 import com.gonagutor.minions.Minions;
 import com.gonagutor.minions.configs.DataFile;
+import com.gonagutor.minions.configs.JSONMinionData;
 import com.gonagutor.minions.configs.MinionConfig;
 import com.gonagutor.minions.configs.MinionData;
 import com.gonagutor.minions.listeners.MinionRightClickListener;
@@ -27,6 +28,7 @@ public class MinionManager {
 		this.plugin = pl;
 		this.minionConfig = new MinionConfig(this.plugin);
 		minionConfig.reloadConfig();
+		JSONMinionData.setMinionManager(this);
 		this.minionList = minionConfig.getAllMinionsInConfig();
 		this.dataFile = new DataFile(this.plugin);
 		dataFile.reloadConfig();

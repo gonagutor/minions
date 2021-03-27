@@ -6,6 +6,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import com.gonagutor.minions.Minions;
+import com.gonagutor.minions.configs.JSONMinionData;
 import com.gonagutor.minions.configs.MinionData;
 import com.google.common.collect.ImmutableMap;
 
@@ -149,7 +150,7 @@ public class BaseMinion implements ConfigurationSerializable {
 		try {
 			return new BaseMinion(
 				Location.deserialize((Map<String, Object>) map.get("minion_location")),
-				MinionData.deserialize((Map<String, Object>) map.get("minion_data")), //TODO: Implement a way to not save the whole minion
+				JSONMinionData.deserialize((String) map.get("minion_data")), //TODO: Implement a way to not save the whole minion
 				((Number) map.get("level")).intValue(),
 				((Number) map.get("items")).intValue(),
 				(long) map.get("money"),
@@ -165,7 +166,7 @@ public class BaseMinion implements ConfigurationSerializable {
 	public Map<String, Object> serialize() {
 		return ImmutableMap.<String, Object>builder()
 			.put("minion_location", minionLocation.serialize())
-			.put("minion_data", minionData.serialize())
+			.put("minion_data", JSONMinionData.serialize(minionData))
 			.put("level", level)
 			.put("items", items)
 			.put("money", (long) money)
