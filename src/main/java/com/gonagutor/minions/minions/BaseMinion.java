@@ -49,7 +49,6 @@ public class BaseMinion implements ConfigurationSerializable {
 		this.setItems(ite);
 		this.setMoney(mon);
 		this.setPlayerUuid(player);
-		spawnMinion();
 	}
 
 	public void spawnMinion() {
@@ -58,6 +57,7 @@ public class BaseMinion implements ConfigurationSerializable {
 		this.minion.setInvulnerable(true);
 		this.minion.setGravity(false);
 		this.minion.setArms(true);
+		this.minion.setBasePlate(false);
 		this.minion.addEquipmentLock(EquipmentSlot.HAND, LockType.REMOVING_OR_CHANGING);
 		this.minion.addEquipmentLock(EquipmentSlot.HEAD, LockType.REMOVING_OR_CHANGING);
 		this.minion.addEquipmentLock(EquipmentSlot.CHEST, LockType.REMOVING_OR_CHANGING);

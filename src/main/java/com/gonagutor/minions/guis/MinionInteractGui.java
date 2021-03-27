@@ -2,6 +2,7 @@ package com.gonagutor.minions.guis;
 
 import java.util.Arrays;
 
+import com.gonagutor.minions.managers.MinionManager;
 import com.gonagutor.minions.minions.BaseMinion;
 
 import org.bukkit.Bukkit;
@@ -18,9 +19,11 @@ import org.bukkit.inventory.meta.ItemMeta;
 public class MinionInteractGui implements Listener {
 	private final Inventory inv;
 	private BaseMinion minion;
+	private MinionManager minionManager;
 
-	public MinionInteractGui(BaseMinion bm) {
+	public MinionInteractGui(BaseMinion bm, MinionManager mm) {
 		this.minion = bm;
+		this.minionManager = mm;
 		inv = Bukkit.createInventory(null, 54, minion.getMenuTitle());
 		initializeItems();
 	}
@@ -78,7 +81,7 @@ public class MinionInteractGui implements Listener {
 		final ItemStack clickedItem = e.getCurrentItem();
 		if (clickedItem == null || clickedItem.getType() == Material.AIR) return;
 		if (e.getRawSlot() == 53) {
-			minion.getMinion().remove();
+			minionManager.removeMinion(minion);
 			Bukkit.getScheduler().cancelTask(minion.getMinionTask().getTaskId());
 			e.getWhoClicked().closeInventory();
 			e.getWhoClicked().getInventory().addItem(minion.getMinion().getEquipment().getHelmet());

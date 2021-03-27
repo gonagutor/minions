@@ -23,7 +23,7 @@ public class MinionRightClickListener implements Listener {
 	public void onMinionRightClick(PlayerInteractAtEntityEvent e) {
 		if (e.getRightClicked().getType() != EntityType.ARMOR_STAND) return;
 		if (minion.getMinion() != e.getRightClicked()) return;
-		MinionInteractGui migui = new MinionInteractGui(minion);
+		MinionInteractGui migui = new MinionInteractGui(minion, minionManager);
 		Bukkit.getPluginManager().registerEvents(migui, minionManager.getPlugin());
 		migui.openInventory(e.getPlayer());
 	}

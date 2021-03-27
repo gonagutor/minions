@@ -73,7 +73,6 @@ public class DataFile {
 	public Set<BaseMinion> getPlayersMinions() {
 		Set<BaseMinion> minions = new HashSet<>();
 		JSONArray array = (JSONArray) this.getConfig().get("player_minions");
-		System.out.println(array);
 		for (int i = 0; i < array.size(); i++) {
 			BaseMinion minion = BaseMinion.deserialize((Map<String, Object>) array.get(i));
 			switch (minion.getMinionData().getMinionType()) {
