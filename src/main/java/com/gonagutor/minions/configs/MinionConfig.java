@@ -74,13 +74,15 @@ public class MinionConfig {
 				wrongConfig(key);
 				return getAllMinionsInConfig();
 			}
+			mData.setKey(key);
 			md.add(mData);
 		}
 		return md;
 	}
 
 	public void addNewMinionToConfig(String branch, MinionData md) {
-		this.getConfig().set("minions." + branch, md);;
+		this.getConfig().set("minions." + branch, md);; // Deserialize using .deserialize() to not show the == thingy
+		md.setKey(branch);
 		this.saveConfig();
 		this.reloadConfig();
 	}

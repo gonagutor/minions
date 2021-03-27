@@ -29,11 +29,12 @@ public class MinionPlaceListener implements Listener {
 		}
 		if (mData == null) return;
 		e.setCancelled(true);
+
 		Location minionLocation = e.getBlock().getLocation().add(0.5, 0, 0.5);
 		switch (mData.getMinionType()) {
 			case BLOCK_MINION:
-				BlockMinion minion = (BlockMinion) mData.toMinion(minionLocation, 10);
-				minion.setHead(mData.toSkull());
+				BlockMinion minion = (BlockMinion) mData.toMinion(minionLocation, 10, e.getPlayer().getUniqueId());
+				minionManager.newMinionPlaced(minion);
 				minion.spawnMinion();
 				Bukkit.getPluginManager().registerEvents(new MinionRightClickListener(minionManager, minion), minionManager.getPlugin());
 				break;

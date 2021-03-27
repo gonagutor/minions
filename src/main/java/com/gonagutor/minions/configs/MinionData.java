@@ -2,6 +2,7 @@ package com.gonagutor.minions.configs;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import com.gonagutor.minions.minions.BaseMinion;
 import com.gonagutor.minions.minions.BlockMinion;
@@ -20,21 +21,44 @@ import org.bukkit.inventory.meta.SkullMeta;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import net.md_5.bungee.api.ChatColor;
 
 @NoArgsConstructor @AllArgsConstructor
 public class MinionData implements ConfigurationSerializable{
 	public static enum MinionType {BLOCK_MINION}
-	@Getter private String itemName;
-	@Getter private List<String> itemLore;
-	@Getter private MinionType minionType;
-	@Getter private Recipe recipe;
-	@Getter private int maxLevel;
-	@Getter private String minionName;
-	@Getter private Material dropMaterial;
-	@Getter private Material blockMaterial;
-	@Getter private Color leatherArmorColor;
-	@Getter private String skullOwner;
+	@Getter @Setter private String key;
+	@Getter @Setter private String itemName;
+	@Getter @Setter private List<String> itemLore;
+	@Getter @Setter private MinionType minionType;
+	@Getter @Setter private Recipe recipe;
+	@Getter @Setter private int maxLevel;
+	@Getter @Setter private String minionName;
+	@Getter @Setter private Material dropMaterial;
+	@Getter @Setter private Material blockMaterial;
+	@Getter @Setter private Color leatherArmorColor;
+	@Getter @Setter private String skullOwner;
+	@Getter @Setter private ItemStack chest;
+	@Getter @Setter private ItemStack legs;
+	@Getter @Setter private ItemStack boots;
+	@Getter @Setter private ItemStack tool;
+
+	public MinionData(String itemName, List<String> itemLore, MinionType minionType, Recipe recipe, int maxLevel, String minionName, Material dropMaterial, Material blockMaterial, Color leatherArmorColor, String skullOwner, ItemStack chest, ItemStack legs, ItemStack boots, ItemStack tool) {
+		this.itemName = itemName;
+		this.itemLore = itemLore;
+		this.minionType = minionType;
+		this.recipe = null;
+		this.maxLevel = maxLevel;
+		this.minionName = minionName;
+		this.dropMaterial = dropMaterial;
+		this.blockMaterial  = blockMaterial; 
+		this.leatherArmorColor = leatherArmorColor; 
+		this.skullOwner = skullOwner; 
+		this.chest = chest; 
+		this.legs = legs; 
+		this.boots = boots; 
+		this.tool = tool; 
+	}
 
 	@SuppressWarnings("unchecked")
 	public static MinionData deserialize(Map<String, Object> map) {
@@ -51,15 +75,19 @@ public class MinionData implements ConfigurationSerializable{
 				lore,
 				MinionType.valueOf((String) map.get("minion_type")),
 				null,//(Recipe) map.get("recipe")
-				(int) map.get("max_level"),
+				((Number) map.get("max_level")).intValue(),
 				ChatColor.translateAlternateColorCodes('&', (String) map.get("minion_name")),
 				Material.valueOf((String)map.get("drop_material")),
 				Material.valueOf((String)map.get("block_material")),
 				Color.deserialize((Map<String,Object>)map.get("minion_color")),
-				(String)map.get("skull_owner")
+				(String)map.get("skull_owner"),
+				new ItemStack(Material.valueOf((String) map.get("chestplate"))),
+				new ItemStack(Material.valueOf((String) map.get("leggins"))),
+				new ItemStack(Material.valueOf((String) map.get("boots"))),
+				new ItemStack(Material.valueOf((String) map.get("tool")))
 			);
 		} catch (Exception e) {
-			Bukkit.getConsoleSender().sendMessage("ERRRRROR");
+			e.printStackTrace();
 			return new MinionData();
 		}
 	}
@@ -76,6 +104,10 @@ public class MinionData implements ConfigurationSerializable{
 			.put("block_material", blockMaterial.toString())
 			.put("minion_color", leatherArmorColor.serialize())
 			.put("skull_owner", skullOwner)
+			.put("chestplate", chest.getType().toString())
+			.put("leggins", legs.getType().toString())
+			.put("boots", boots.getType().toString())
+			.put("tool", tool.getType().toString())
 			.build();
 	}
 
@@ -100,15 +132,11 @@ public class MinionData implements ConfigurationSerializable{
 
 	}
 
-	public BaseMinion toMinion(Location loc, int level) {
+	public BaseMinion toMinion(Location loc, int level, UUID player) {
 		switch (minionType) {
 			case BLOCK_MINION:
-				BlockMinion minion = new BlockMinion(loc, this.blockMaterial, this.dropMaterial, level, minionName);
+				BlockMinion minion = new BlockMinion(loc, this, level, player);
 				if (leatherArmorColor != null) {
-					ItemStack itemHelmet = new ItemStack(Material.LEATHER_HELMET);
-					LeatherArmorMeta helmetMeta = (LeatherArmorMeta) itemHelmet.getItemMeta();
-					helmetMeta.setColor(this.leatherArmorColor);
-					itemHelmet.setItemMeta(helmetMeta);
 					ItemStack itemChest = new ItemStack(Material.LEATHER_CHESTPLATE);
 					LeatherArmorMeta chestMeta = (LeatherArmorMeta) itemChest.getItemMeta();
 					chestMeta.setColor(this.leatherArmorColor);
@@ -122,10 +150,9 @@ public class MinionData implements ConfigurationSerializable{
 					bootsMeta.setColor(this.leatherArmorColor);
 					itemBoots.setItemMeta(bootsMeta);
 
-					minion.setHead(itemHelmet);
-					minion.setChest(itemChest);
-					minion.setLegs(itemLegs);
-					minion.setBoots(itemBoots);
+					this.setChest(itemChest);
+					this.setLegs(itemLegs);
+					this.setBoots(itemBoots);
 				}
 				return minion;
 			default:

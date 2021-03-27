@@ -18,13 +18,34 @@ public class MinionManager {
 	@Getter MinionConfig minionConfig;
 	@Getter Set<MinionData> minionList;
 	@Getter DataFile dataFile;
+	@Getter Set<BaseMinion> loadedMinions = new HashSet<>();
 
 	public MinionManager (Minions pl) {
 		this.plugin = pl;
 		this.minionConfig = new MinionConfig(this.plugin);
 		minionConfig.reloadConfig();
+		this.minionList = minionConfig.getAllMinionsInConfig();
 		this.dataFile = new DataFile(this.plugin);
 		dataFile.reloadConfig();
-		this.minionList = minionConfig.getAllMinionsInConfig();
+	}
+
+	public void spawnAllMinions() {
+		this.loadedMinions = dataFile.getPlayersMinions();
+		for (BaseMinion minion: loadedMinions) {
+			minion.spawnMinion();
+		}
+	}
+
+	public void despawnAllMinions() {
+		if (loadedMinions == null) return;
+		dataFile.savePlayersMinions(loadedMinions);
+		for (BaseMinion minion : loadedMinions) {
+			minion.getMinion().remove();
+		}
+	}
+
+	public void newMinionPlaced(BaseMinion minion) {
+		this.loadedMinions.add(minion);
+		dataFile.savePlayersMinions(loadedMinions);
 	}
 }

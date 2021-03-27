@@ -34,10 +34,10 @@ public class MinionInteractGui implements Listener {
 			for (int i = 21 + z; i < 26 + z; i++) {
 				if (amount > 0) {
 					if (amount / 64 > 0) {
-						inv.setItem(i, new ItemStack(minion.getMaterial(), 64));
+						inv.setItem(i, new ItemStack(minion.getMinionData().getDropMaterial(), 64));
 						amount -= 64;
 					} else {
-						inv.setItem(i, new ItemStack(minion.getMaterial(), amount));
+						inv.setItem(i, new ItemStack(minion.getMinionData().getDropMaterial(), amount));
 						amount = 0;
 					}
 				}
@@ -49,7 +49,7 @@ public class MinionInteractGui implements Listener {
 		inv.setItem(4, minion.getMinion().getEquipment().getHelmet());
 		inv.setItem(5, createGuiItem(Material.GOLD_INGOT, "§6§lView Recipe", "§7Click this item to", "§7view the recipe to make this minion"));
 		inv.setItem(10, createGuiItem(Material.LIME_STAINED_GLASS_PANE, "§2Skin slot"));
-		inv.setItem(19, createGuiItem(Material.ORANGE_STAINED_GLASS_PANE, "§3Smth slot"));
+		inv.setItem(19, createGuiItem(Material.ORANGE_STAINED_GLASS_PANE, "§3Fuel slot"));
 		inv.setItem(28, createGuiItem(Material.BLUE_STAINED_GLASS_PANE, "§3Output slot"));
 		inv.setItem(37, createGuiItem(Material.YELLOW_STAINED_GLASS_PANE, "§eUpgrade slot"));
 		inv.setItem(46, createGuiItem(Material.YELLOW_STAINED_GLASS_PANE, "§eUpgrade slot"));

@@ -1,18 +1,22 @@
 package com.gonagutor.minions.minions;
 
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
+
+import com.gonagutor.minions.Minions;
+import com.gonagutor.minions.configs.MinionData;
+import com.google.common.collect.ImmutableMap;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Color;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.ArmorStand.LockType;
 import org.bukkit.inventory.EquipmentSlot;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.EulerAngle;
@@ -21,25 +25,31 @@ import org.bukkit.util.Vector;
 import lombok.Getter;
 import lombok.Setter;
 
-public class BaseMinion{
+public class BaseMinion implements ConfigurationSerializable {
 	@Getter @Setter private ArmorStand minion;
 	@Getter private Location minionLocation;
 
-	@Getter @Setter private ItemStack head;
-	@Getter @Setter private ItemStack chest;
-	@Getter @Setter private ItemStack legs;
-	@Getter @Setter private ItemStack boots;
-	@Getter @Setter private ItemStack tool;
+	@Getter @Setter private MinionData minionData;
 
 	@Getter @Setter private int level;
-	@Getter @Setter private Color color;
 	@Getter @Setter private String menuTitle;
 	@Getter @Setter private BukkitTask minionTask;
-	@Getter @Setter private Material material;
 	@Getter @Setter private int items;
 	@Getter @Setter private long money;
+	@Getter @Setter private UUID playerUuid;
 	public BaseMinion (Location newMinionLoc) {
 		this.minionLocation = newMinionLoc;
+	}
+
+	private BaseMinion (Location loc, MinionData mData, int level, int ite, long mon, UUID player) {
+		this.setMenuTitle(mData.getMinionName() + " level " + level);
+		this.setMinionData(mData);
+		this.minionLocation = loc;
+		this.setLevel(level);
+		this.setItems(ite);
+		this.setMoney(mon);
+		this.setPlayerUuid(player);
+		spawnMinion();
 	}
 
 	public void spawnMinion() {
@@ -48,21 +58,21 @@ public class BaseMinion{
 		this.minion.setInvulnerable(true);
 		this.minion.setGravity(false);
 		this.minion.setArms(true);
-		if (head != null)
-			minion.getEquipment().setHelmet(head);
-		if (chest != null)
-			minion.getEquipment().setChestplate(chest);
-		if (legs != null)
-			minion.getEquipment().setLeggings(legs);
-		if (boots != null)
-			minion.getEquipment().setBoots(boots);
-		if (tool != null)
-			minion.getEquipment().setItemInMainHand(tool);
 		this.minion.addEquipmentLock(EquipmentSlot.HAND, LockType.REMOVING_OR_CHANGING);
 		this.minion.addEquipmentLock(EquipmentSlot.HEAD, LockType.REMOVING_OR_CHANGING);
 		this.minion.addEquipmentLock(EquipmentSlot.CHEST, LockType.REMOVING_OR_CHANGING);
 		this.minion.addEquipmentLock(EquipmentSlot.LEGS, LockType.REMOVING_OR_CHANGING);
 		this.minion.addEquipmentLock(EquipmentSlot.FEET, LockType.REMOVING_OR_CHANGING);
+		minion.getEquipment().setHelmet(minionData.toSkull());
+
+		if (this.getMinionData().getChest() != null)
+			minion.getEquipment().setChestplate(this.getMinionData().getChest());
+		if (this.getMinionData().getLegs() != null)
+			minion.getEquipment().setLeggings(this.getMinionData().getLegs());
+		if (this.getMinionData().getBoots() != null)
+			minion.getEquipment().setBoots(this.getMinionData().getBoots());
+		if (this.getMinionData().getTool() != null)
+			minion.getEquipment().setItemInMainHand(this.getMinionData().getTool());
 	}
 
 	public Set<Block> getInfluenceBlocks() {
@@ -126,10 +136,40 @@ public class BaseMinion{
 					armorStand.setRightArmPose(armorStand.getRightArmPose().add(0.1, 0, 0));
 			}
 		}
-		BukkitTask animation = new AnimateArm(target).runTaskTimer(Bukkit.getPluginManager().getPlugin("Minions"), 0, 1);
-		Bukkit.getScheduler().runTaskLater(Bukkit.getPluginManager().getPlugin("Minions"), () -> {
+		BukkitTask animation = new AnimateArm(target).runTaskTimer(Minions.getPlugin(Minions.class), 0, 1);
+		Bukkit.getScheduler().runTaskLater(Minions.getPlugin(Minions.class), () -> {
 			animation.cancel();
 			target.setLeftArmPose(new EulerAngle(0, 0, 0));
 		} , 40 * (10 / this.getLevel()));
+	}
+
+//		** Serialization **
+	@SuppressWarnings("unchecked")
+	public static BaseMinion deserialize(Map<String, Object> map) {
+		try {
+			return new BaseMinion(
+				Location.deserialize((Map<String, Object>) map.get("minion_location")),
+				MinionData.deserialize((Map<String, Object>) map.get("minion_data")), //TODO: Implement a way to not save the whole minion
+				((Number) map.get("level")).intValue(),
+				((Number) map.get("items")).intValue(),
+				(long) map.get("money"),
+				UUID.fromString((String) map.get("player_uuid"))
+			);
+		} catch (Exception e) {
+			Bukkit.getConsoleSender().sendMessage("ERRRRROR");
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	public Map<String, Object> serialize() {
+		return ImmutableMap.<String, Object>builder()
+			.put("minion_location", minionLocation.serialize())
+			.put("minion_data", minionData.serialize())
+			.put("level", level)
+			.put("items", items)
+			.put("money", (long) money)
+			.put("player_uuid", playerUuid.toString())
+			.build();
 	}
 }
