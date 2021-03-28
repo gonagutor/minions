@@ -25,7 +25,7 @@ public class MinionRightClickListener implements Listener {
 			return;
 		if (minion.getMinion() != e.getRightClicked())
 			return;
-		if (e.getPlayer().getUniqueId() != minion.getPlayerUuid())
+		if (!e.getPlayer().getUniqueId().equals(minion.getPlayerUuid()))
 			return;
 
 		MinionInteractGui minionInteractGui = new MinionInteractGui(minion, minionManager);
