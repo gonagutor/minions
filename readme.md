@@ -20,7 +20,8 @@ You can do so creating a pull request!
     -   [ ] Builder Minion
     -   [ ] Fisher Minion
     -   [ ] More minions
--   [ ] Add more a command to give minion to specific player
+-   [ ] Add more commands
+-   [x] Give minion to specific player
 -   [ ] Add upgrades
     -   [ ] Compactor upgrade
     -   [ ] Smelter upgrade
