@@ -114,3 +114,4 @@ run/
 
 #VSCode
 .vscode
+.prettierrc

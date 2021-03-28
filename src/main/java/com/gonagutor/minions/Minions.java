@@ -15,9 +15,10 @@ import lombok.Getter;
 import net.md_5.bungee.api.ChatColor;
 
 public final class Minions extends JavaPlugin {
-	@Getter private static String prefix = ChatColor.translateAlternateColorCodes('&', "&a[&6&lMinion&a] "); 
-	@Getter private MinionManager minionManager;
-
+	@Getter
+	private static String prefix = ChatColor.translateAlternateColorCodes('&', "&a[&6&lMinion&a] ");
+	@Getter
+	private MinionManager minionManager;
 
 	@Override
 	public void onEnable() {
@@ -25,7 +26,7 @@ public final class Minions extends JavaPlugin {
 		ConfigurationSerialization.registerClass(BaseMinion.class);
 		ConfigurationSerialization.registerClass(BlockMinion.class);
 		this.minionManager = new MinionManager(this);
-		
+
 		minionManager.spawnAllMinions();
 		this.getCommand("minions").setExecutor(new MinionsCommand(this.minionManager));
 		Bukkit.getPluginManager().registerEvents(new MinionPlaceListener(this.minionManager), this);
@@ -34,7 +35,7 @@ public final class Minions extends JavaPlugin {
 
 	@Override
 	public void onDisable() {
-		minionManager.despawnAllMinions();
+		minionManager.deSpawnAllMinions();
 		Bukkit.getConsoleSender().sendMessage(prefix + "The plugin has been disabled");
 	}
 }

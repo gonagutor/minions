@@ -31,6 +31,9 @@ public class DataFile {
 		saveDefaultConfig();
 	}
 
+	/**
+	 * Reloads the config json file
+	 */
 	public void reloadConfig() {
 		if (this.dataFile == null)
 			this.dataFile = new File(this.plugin.getDataFolder(), "data.json");
@@ -41,12 +44,20 @@ public class DataFile {
 		}
 	}
 
+	/**
+	 * Gets the json object containing the player minions
+	 * 
+	 * @return JSONObject containing the minions
+	 */
 	public JSONObject getConfig() {
 		if (this.json == null)
 			reloadConfig();
 		return this.json;
 	}
 
+	/**
+	 * Saves the json file. Pretty printed
+	 */
 	public void saveConfig() {
 		if (this.json == null || this.dataFile == null)
 			return;
@@ -57,10 +68,15 @@ public class DataFile {
 			fw.flush();
 			fw.close();
 		} catch (IOException e) {
-			plugin.getLogger().log(Level.SEVERE, Minions.getPrefix() + "File could not be saved in: " + this.dataFile, e);
+			plugin.getLogger().log(Level.SEVERE, Minions.getPrefix() + "File could not be saved in: " + this.dataFile,
+					e);
 		}
 	}
 
+	/**
+	 * Saves the file from the plugin resources if the file is not found in the
+	 * config folder
+	 */
 	public void saveDefaultConfig() {
 		if (this.dataFile == null)
 			this.dataFile = new File(this.plugin.getDataFolder(), "data.json");
@@ -69,6 +85,11 @@ public class DataFile {
 		}
 	}
 
+	/**
+	 * Recovers the config
+	 * 
+	 * @return Set containing player minions
+	 */
 	@SuppressWarnings("unchecked")
 	public Set<BaseMinion> getPlayersMinions() {
 		Set<BaseMinion> minions = new HashSet<>();
@@ -76,24 +97,29 @@ public class DataFile {
 		for (int i = 0; i < array.size(); i++) {
 			BaseMinion minion = BaseMinion.deserialize((Map<String, Object>) array.get(i));
 			switch (minion.getMinionData().getMinionType()) {
-				case BLOCK_MINION:
-					minions.add(new BlockMinion(minion));
-					break;
-				default:
-					break;
+			case BLOCK_MINION:
+				minions.add(new BlockMinion(minion));
+				break;
+			default:
+				break;
 			}
 		}
 
 		return minions;
 	}
 
+	/**
+	 * Saves player minions to the json file
+	 * 
+	 * @param minions Set containing player's minions
+	 */
 	@SuppressWarnings("unchecked")
 	public void savePlayersMinions(Set<BaseMinion> minions) {
 		JSONArray array = new JSONArray();
 
 		for (BaseMinion minion : minions) {
 			array.add(minion.serialize());
-		}	
+		}
 		this.getConfig().put("player_minions", array);
 		this.saveConfig();
 	}

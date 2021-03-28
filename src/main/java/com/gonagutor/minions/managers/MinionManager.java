@@ -17,14 +17,21 @@ import lombok.Getter;
 import lombok.Setter;
 
 public class MinionManager {
-	@Getter @Setter private Set<BaseMinion> minions = new HashSet<>();
-	@Getter private Minions plugin;
-	@Getter MinionConfig minionConfig;
-	@Getter Set<MinionData> minionList;
-	@Getter DataFile dataFile;
-	@Getter Set<BaseMinion> loadedMinions = new HashSet<>();
+	@Getter
+	@Setter
+	private Set<BaseMinion> minions = new HashSet<>();
+	@Getter
+	private Minions plugin;
+	@Getter
+	MinionConfig minionConfig;
+	@Getter
+	Set<MinionData> minionList;
+	@Getter
+	DataFile dataFile;
+	@Getter
+	Set<BaseMinion> loadedMinions = new HashSet<>();
 
-	public MinionManager (Minions pl) {
+	public MinionManager(Minions pl) {
 		this.plugin = pl;
 		this.minionConfig = new MinionConfig(this.plugin);
 		minionConfig.reloadConfig();
@@ -34,28 +41,45 @@ public class MinionManager {
 		dataFile.reloadConfig();
 	}
 
+	/**
+	 * Spawns all the minions found in config
+	 */
 	public void spawnAllMinions() {
 		this.loadedMinions = dataFile.getPlayersMinions();
-		for (BaseMinion minion: loadedMinions) {
+		for (BaseMinion minion : loadedMinions) {
 			minion.spawnMinion();
 			Bukkit.getPluginManager().registerEvents(new MinionRightClickListener(this, minion), this.getPlugin());
 		}
 	}
 
-	public void despawnAllMinions() {
-		if (loadedMinions == null) return;
+	/**
+	 * Despawns all minions to be respawned on server load
+	 */
+	public void deSpawnAllMinions() {
+		if (loadedMinions == null)
+			return;
 		dataFile.savePlayersMinions(loadedMinions);
 		for (BaseMinion minion : loadedMinions) {
 			minion.getMinion().remove();
 		}
 	}
 
+	/**
+	 * Add a minion to the loaded minions list
+	 * 
+	 * @param minion Minion to save to config
+	 */
 	public void newMinionPlaced(BaseMinion minion) {
 		this.loadedMinions.add(minion);
 		dataFile.savePlayersMinions(loadedMinions);
 	}
 
-	public void removeMinion(BaseMinion minion){
+	/**
+	 * Removes minion from loaded minions
+	 * 
+	 * @param minion Minion to remove
+	 */
+	public void removeMinion(BaseMinion minion) {
 		minion.getMinion().remove();
 		loadedMinions.remove(minion);
 	}

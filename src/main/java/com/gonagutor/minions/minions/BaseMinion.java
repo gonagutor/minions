@@ -27,22 +27,55 @@ import lombok.Getter;
 import lombok.Setter;
 
 public class BaseMinion implements ConfigurationSerializable {
-	@Getter @Setter private ArmorStand minion;
-	@Getter private Location minionLocation;
+	@Getter
+	@Setter
+	private ArmorStand minion;
+	@Getter
+	private Location minionLocation;
 
-	@Getter @Setter private MinionData minionData;
+	@Getter
+	@Setter
+	private MinionData minionData;
 
-	@Getter @Setter private int level;
-	@Getter @Setter private String menuTitle;
-	@Getter @Setter private BukkitTask minionTask;
-	@Getter @Setter private int items;
-	@Getter @Setter private long money;
-	@Getter @Setter private UUID playerUuid;
-	public BaseMinion (Location newMinionLoc) {
+	@Getter
+	@Setter
+	private int level;
+	@Getter
+	@Setter
+	private String menuTitle;
+	@Getter
+	@Setter
+	private BukkitTask minionTask;
+	@Getter
+	@Setter
+	private int items;
+	@Getter
+	@Setter
+	private long money;
+	@Getter
+	@Setter
+	private UUID playerUuid;
+
+	/**
+	 * This must be super(ed) by any minion extension
+	 * 
+	 * @param newMinionLoc
+	 */
+	public BaseMinion(Location newMinionLoc) {
 		this.minionLocation = newMinionLoc;
 	}
 
-	private BaseMinion (Location loc, MinionData mData, int level, int ite, long mon, UUID player) {
+	/**
+	 * This constructor is required for deserialize
+	 * 
+	 * @param loc    ArmourStand entity location
+	 * @param mData  MinionData from config
+	 * @param level  Minion level
+	 * @param ite    Minion items quantity
+	 * @param mon    Minion money
+	 * @param player UUID of the player who placed the minion
+	 */
+	private BaseMinion(Location loc, MinionData mData, int level, int ite, long mon, UUID player) {
 		this.setMenuTitle(mData.getMinionName() + " level " + level);
 		this.setMinionData(mData);
 		this.minionLocation = loc;
@@ -52,6 +85,10 @@ public class BaseMinion implements ConfigurationSerializable {
 		this.setPlayerUuid(player);
 	}
 
+	/**
+	 * Spawns the minion, applies locks to slots, sets characteristics and adds
+	 * equipment to entity, including custom skull.
+	 */
 	public void spawnMinion() {
 		this.minion = (ArmorStand) minionLocation.getWorld().spawnEntity(minionLocation, EntityType.ARMOR_STAND);
 		this.minion.setSmall(true);
@@ -76,31 +113,34 @@ public class BaseMinion implements ConfigurationSerializable {
 			minion.getEquipment().setItemInMainHand(this.getMinionData().getTool());
 	}
 
+	/**
+	 * Get the minion's influence blocks
+	 * 
+	 * @return Set containing including blocks
+	 */
 	public Set<Block> getInfluenceBlocks() {
 		int minionRadius = 2;
 		Set<Block> blocks = new HashSet<>();
-        for (float sqx = 0; sqx < minionRadius * 2 + 1; sqx++) {
-            float x = minionRadius - sqx;
-            for (float sqz = 0; sqz < minionRadius * 2 + 1; sqz++) {
-                float z = minionRadius - sqz;
-                Block block = new Location(
-                    minionLocation.getWorld(),
-                    minionLocation.getX() + x,
-                    minionLocation.getY() - 1,
-                    minionLocation.getZ() + z
-                ).getBlock();
-                blocks.add(block);
-            }
-			blocks.remove(new Location(
-				minionLocation.getWorld(),
-				minionLocation.getX(),
-				minionLocation.getY() - 1,
-				minionLocation.getZ()
-			).getBlock());
-        }
-        return (blocks);
+		for (float sqx = 0; sqx < minionRadius * 2 + 1; sqx++) {
+			float x = minionRadius - sqx;
+			for (float sqz = 0; sqz < minionRadius * 2 + 1; sqz++) {
+				float z = minionRadius - sqz;
+				Block block = new Location(minionLocation.getWorld(), minionLocation.getX() + x,
+						minionLocation.getY() - 1, minionLocation.getZ() + z).getBlock();
+				blocks.add(block);
+			}
+			blocks.remove(new Location(minionLocation.getWorld(), minionLocation.getX(), minionLocation.getY() - 1,
+					minionLocation.getZ()).getBlock());
+		}
+		return (blocks);
 	}
 
+	/* -------------- Animation Utilities -------------- */
+	/* This section contains minion animation utilities */
+
+	/**
+	 * Restores ArmourStand pose abruptly with no animation
+	 */
 	public void restorePose() {
 		EulerAngle zeroRot = new EulerAngle(0, 0, 0);
 		this.minion.setHeadPose(zeroRot);
@@ -111,12 +151,17 @@ public class BaseMinion implements ConfigurationSerializable {
 		this.minion.setBodyPose(zeroRot);
 	}
 
+	/**
+	 * Rotates minion to face location
+	 * 
+	 * @param lookHere Location to look towards
+	 */
 	public void rotateMinionToLocation(Location lookHere) {
 		ArmorStand target = this.getMinion();
 		Vector lookDirection = target.getLocation().toVector().clone();
 		lookDirection.subtract(lookHere.toVector());
 
-		Vector direction = target.getLocation().toVector().subtract(lookHere.add(0.5, 0.5, 0.5).toVector()) .normalize();
+		Vector direction = target.getLocation().toVector().subtract(lookHere.add(0.5, 0.5, 0.5).toVector()).normalize();
 		double x = direction.getX();
 		double y = direction.getY();
 		double z = direction.getZ();
@@ -129,12 +174,16 @@ public class BaseMinion implements ConfigurationSerializable {
 		target.teleport(changed);
 	}
 
+	/**
+	 * Plays out block break hand animation
+	 */
 	public void playOutBreakAnimation() {
 		ArmorStand target = this.getMinion();
 		final class AnimateBreak extends BukkitRunnable {
 			ArmorStand armorStand;
 			Boolean forward = true;
-			public AnimateBreak (ArmorStand as) {
+
+			public AnimateBreak(ArmorStand as) {
 				this.armorStand = as;
 			}
 
@@ -158,14 +207,19 @@ public class BaseMinion implements ConfigurationSerializable {
 		}, 20);
 	}
 
+	/**
+	 * Plays out block place hand animation
+	 */
 	public void playOutPlaceAnimation() {
 		this.getMinion().setRightArmPose(new EulerAngle(-3, 0, 0));
 		this.getMinion().setLeftArmPose(new EulerAngle(-3, 0, 0));
 		final class AnimatePlace extends BukkitRunnable {
 			ArmorStand armorStand;
-			public AnimatePlace (ArmorStand as) {
+
+			public AnimatePlace(ArmorStand as) {
 				this.armorStand = as;
 			}
+
 			@Override
 			public void run() {
 				if (armorStand.getRightArmPose().getX() < 0) {
@@ -180,33 +234,37 @@ public class BaseMinion implements ConfigurationSerializable {
 		}, 20);
 	}
 
-//		** Serialization **
+	/* ----------- Serialization Utilities ----------- */
+	/* This section contains methods for serialization */
+
+	/**
+	 * Deserialize a map to get the minion data.
+	 * <p>
+	 * <b>This method will return null if it deserialize fails</b>
+	 * </p>
+	 * 
+	 * @param map String -> Object map containing minion data
+	 * @return New BaseMinion from map data.
+	 */
 	@SuppressWarnings("unchecked")
 	public static BaseMinion deserialize(Map<String, Object> map) {
 		try {
-			return new BaseMinion(
-				Location.deserialize((Map<String, Object>) map.get("minion_location")),
-				JSONMinionData.deserialize((String) map.get("minion_data")), //TODO: Implement a way to not save the whole minion
-				((Number) map.get("level")).intValue(),
-				((Number) map.get("items")).intValue(),
-				(long) map.get("money"),
-				UUID.fromString((String) map.get("player_uuid"))
-			);
+			return new BaseMinion(Location.deserialize((Map<String, Object>) map.get("minion_location")),
+					JSONMinionData.deserialize((String) map.get("minion_data")), ((Number) map.get("level")).intValue(),
+					((Number) map.get("items")).intValue(), (long) map.get("money"),
+					UUID.fromString((String) map.get("player_uuid")));
 		} catch (Exception e) {
-			Bukkit.getConsoleSender().sendMessage("ERRRRROR");
 			e.printStackTrace();
 			return null;
 		}
 	}
 
+	/**
+	 * Serializes this minion to a map
+	 */
 	public Map<String, Object> serialize() {
-		return ImmutableMap.<String, Object>builder()
-			.put("minion_location", minionLocation.serialize())
-			.put("minion_data", JSONMinionData.serialize(minionData))
-			.put("level", level)
-			.put("items", items)
-			.put("money", (long) money)
-			.put("player_uuid", playerUuid.toString())
-			.build();
+		return ImmutableMap.<String, Object>builder().put("minion_location", minionLocation.serialize())
+				.put("minion_data", JSONMinionData.serialize(minionData)).put("level", level).put("items", items)
+				.put("money", (long) money).put("player_uuid", playerUuid.toString()).build();
 	}
 }
