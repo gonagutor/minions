@@ -4,6 +4,9 @@
 *.iml
 *.ipr
 *.iws
+.project
+.factorypath
+.classpath
 
 # IntelliJ
 out/
