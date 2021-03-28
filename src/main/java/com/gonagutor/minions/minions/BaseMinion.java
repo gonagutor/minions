@@ -101,8 +101,20 @@ public class BaseMinion implements ConfigurationSerializable {
         return (blocks);
 	}
 
+	public void restorePose() {
+		EulerAngle zeroRot = new EulerAngle(0, 0, 0);
+		this.minion.setHeadPose(zeroRot);
+		this.minion.setRightArmPose(zeroRot);
+		this.minion.setLeftArmPose(zeroRot);
+		this.minion.setLeftLegPose(zeroRot);
+		this.minion.setRightLegPose(zeroRot);
+		this.minion.setBodyPose(zeroRot);
+	}
+
 	public void rotateMinionToLocation(Location lookHere) {
 		ArmorStand target = this.getMinion();
+		Vector lookDirection = target.getLocation().toVector().clone();
+		lookDirection.subtract(lookHere.toVector());
 
 		Vector direction = target.getLocation().toVector().subtract(lookHere.add(0.5, 0.5, 0.5).toVector()) .normalize();
 		double x = direction.getX();
@@ -112,15 +124,17 @@ public class BaseMinion implements ConfigurationSerializable {
 		Location changed = target.getLocation().clone();
 		changed.setYaw(180 - (float) Math.toDegrees(Math.atan2(x, z)));
 		changed.setPitch(90 - (float) Math.toDegrees(Math.acos(y)));
+
+		target.setHeadPose(new EulerAngle(Math.asin(1 / lookDirection.length()), 0, 0));
 		target.teleport(changed);
 	}
 
-	public void playOutAnimation() {
+	public void playOutBreakAnimation() {
 		ArmorStand target = this.getMinion();
-		final class AnimateArm extends BukkitRunnable {
+		final class AnimateBreak extends BukkitRunnable {
 			ArmorStand armorStand;
 			Boolean forward = true;
-			public AnimateArm (ArmorStand as) {
+			public AnimateBreak (ArmorStand as) {
 				this.armorStand = as;
 			}
 
@@ -137,11 +151,33 @@ public class BaseMinion implements ConfigurationSerializable {
 					armorStand.setRightArmPose(armorStand.getRightArmPose().add(0.1, 0, 0));
 			}
 		}
-		BukkitTask animation = new AnimateArm(target).runTaskTimer(Minions.getPlugin(Minions.class), 0, 1);
+		BukkitTask animation = new AnimateBreak(target).runTaskTimer(Minions.getPlugin(Minions.class), 0, 1);
 		Bukkit.getScheduler().runTaskLater(Minions.getPlugin(Minions.class), () -> {
 			animation.cancel();
-			target.setLeftArmPose(new EulerAngle(0, 0, 0));
-		} , 40 * (10 / this.getLevel()));
+			this.restorePose();
+		}, 20);
+	}
+
+	public void playOutPlaceAnimation() {
+		this.getMinion().setRightArmPose(new EulerAngle(-3, 0, 0));
+		this.getMinion().setLeftArmPose(new EulerAngle(-3, 0, 0));
+		final class AnimatePlace extends BukkitRunnable {
+			ArmorStand armorStand;
+			public AnimatePlace (ArmorStand as) {
+				this.armorStand = as;
+			}
+			@Override
+			public void run() {
+				if (armorStand.getRightArmPose().getX() < 0) {
+					armorStand.setRightArmPose(armorStand.getRightArmPose().add(0.15, 0, 0));
+				}
+			}
+		}
+		BukkitTask animation = new AnimatePlace(this.getMinion()).runTaskTimer(Minions.getPlugin(Minions.class), 0, 1);
+		Bukkit.getScheduler().runTaskLater(Minions.getPlugin(Minions.class), () -> {
+			animation.cancel();
+			this.restorePose();
+		}, 20);
 	}
 
 //		** Serialization **

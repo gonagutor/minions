@@ -14,7 +14,6 @@ public class JSONMinionData {
 
 	public static MinionData deserialize(String key) {
 		for (MinionData minion : minionManager.getMinionList()) {
-			System.out.println(minion.getKey());
 			if (minion.getKey().equals(key)) return minion;
 		}
 		Bukkit.getLogger().severe(Minions.getPrefix() + ChatColor.RED + "There was a place minion with a key that no longer exists. (Missing key: " + key + ")");

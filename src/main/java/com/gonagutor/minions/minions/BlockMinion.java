@@ -27,33 +27,37 @@ public class BlockMinion extends BaseMinion {
 			Set<Block> inflBlocks = minion.getInfluenceBlocks();
 			for (Block block : inflBlocks) {
 				if (block.getType() == Material.AIR) {
-					minion.playOutAnimation();
-					minion.rotateMinionToLocation(block.getLocation());
 					block.setType(minion.getBlockType());
+					minion.rotateMinionToLocation(block.getLocation());
+					minion.playOutPlaceAnimation();
 					return;
 				}
 			}
 			if (minion.getItems() < 64 * 3 * 5) {
 				Block b = (Block)inflBlocks.toArray()[(int)Math.floor(inflBlocks.size() * Math.random())];
+				minion.playOutBreakAnimation();
 				minion.rotateMinionToLocation(b.getLocation());
-				PacketSender packet = new PacketSender();
 				new BukkitRunnable(){
+					PacketSender packet = new PacketSender();
 					int status = 0;
 					@Override
 					public void run() {
+						if (b.getType() == Material.AIR) {
+							cancel();
+							return;
+						}
 						if (status < 10) {
 							packet.sendPacket(b.getLocation(), status);
 							status++;
+							return;
 						}
-						else {
-							packet.sendPacket(b.getLocation(), status);
-							status = 0;
-						}
-						
+						packet.sendPacket(b.getLocation(), status);
+						b.setType(Material.AIR);
+						minion.setItems(minion.getItems() + 1);
+						this.cancel();
+						return;
 					}
-				}.runTaskTimer(Minions.getPlugin(Minions.class), 0, 4);
-				b.setType(Material.AIR);
-				minion.setItems(minion.getItems() + 1);
+				}.runTaskTimer(Minions.getPlugin(Minions.class), 0, 2);
 			}
 		}
 	}
@@ -76,6 +80,7 @@ public class BlockMinion extends BaseMinion {
 		super(minion.getMinionLocation());
 		this.setMinionData(minion.getMinionData());
 		this.setPlayerUuid(minion.getPlayerUuid());
+		this.setItems(minion.getItems());
 		this.setLevel(minion.getLevel());
 		this.setMenuTitle(minion.getMinionData().getMinionName() + " level " + minion.getLevel());
 		this.blockType = minion.getMinionData().getBlockMaterial();

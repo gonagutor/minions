@@ -58,6 +58,24 @@ public class MinionData implements ConfigurationSerializable{
 		this.legs = legs; 
 		this.boots = boots; 
 		this.tool = tool; 
+		if (leatherArmorColor != null) {
+			ItemStack itemChest = new ItemStack(Material.LEATHER_CHESTPLATE);
+			LeatherArmorMeta chestMeta = (LeatherArmorMeta) itemChest.getItemMeta();
+			chestMeta.setColor(this.leatherArmorColor);
+			itemChest.setItemMeta(chestMeta);
+			ItemStack itemLegs = new ItemStack(Material.LEATHER_LEGGINGS);
+			LeatherArmorMeta legsMeta = (LeatherArmorMeta) itemLegs.getItemMeta();
+			legsMeta.setColor(this.leatherArmorColor);
+			itemLegs.setItemMeta(legsMeta);
+			ItemStack itemBoots = new ItemStack(Material.LEATHER_BOOTS);
+			LeatherArmorMeta bootsMeta = (LeatherArmorMeta) itemBoots.getItemMeta();
+			bootsMeta.setColor(this.leatherArmorColor);
+			itemBoots.setItemMeta(bootsMeta);
+
+			this.setChest(itemChest);
+			this.setLegs(itemLegs);
+			this.setBoots(itemBoots);
+		}
 	}
 
 	@SuppressWarnings("unchecked")
