@@ -4,8 +4,6 @@ import com.gonagutor.minions.commands.MinionsCommand;
 import com.gonagutor.minions.configs.MinionData;
 import com.gonagutor.minions.listeners.MinionPlaceListener;
 import com.gonagutor.minions.managers.MinionManager;
-import com.gonagutor.minions.minions.BaseMinion;
-import com.gonagutor.minions.minions.BlockMinion;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
@@ -23,8 +21,6 @@ public final class Minions extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		ConfigurationSerialization.registerClass(MinionData.class);
-		ConfigurationSerialization.registerClass(BaseMinion.class);
-		ConfigurationSerialization.registerClass(BlockMinion.class);
 		this.minionManager = new MinionManager(this);
 
 		minionManager.spawnAllMinions();

@@ -2,7 +2,7 @@ package com.gonagutor.minions.listeners;
 
 import com.gonagutor.minions.guis.MinionInteractGui;
 import com.gonagutor.minions.managers.MinionManager;
-import com.gonagutor.minions.minions.BaseMinion;
+import com.gonagutor.minions.api.BaseMinion;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.EntityType;

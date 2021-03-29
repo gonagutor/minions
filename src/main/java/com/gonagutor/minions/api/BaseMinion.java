@@ -1,4 +1,4 @@
-package com.gonagutor.minions.minions;
+package com.gonagutor.minions.api;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -13,7 +13,6 @@ import com.google.common.collect.ImmutableMap;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
-import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.ArmorStand.LockType;
@@ -26,7 +25,7 @@ import org.bukkit.util.Vector;
 import lombok.Getter;
 import lombok.Setter;
 
-public class BaseMinion implements ConfigurationSerializable {
+public abstract class BaseMinion {
 	@Getter
 	@Setter
 	private ArmorStand minion;
@@ -37,6 +36,9 @@ public class BaseMinion implements ConfigurationSerializable {
 	@Setter
 	private MinionData minionData;
 
+	@Getter
+	@Setter
+	private String identifier;
 	@Getter
 	@Setter
 	private int level;
@@ -61,21 +63,8 @@ public class BaseMinion implements ConfigurationSerializable {
 	 * 
 	 * @param newMinionLoc
 	 */
-	public BaseMinion(Location newMinionLoc) {
-		this.minionLocation = newMinionLoc;
-	}
-
-	/**
-	 * This constructor is required for deserialize
-	 * 
-	 * @param loc    ArmourStand entity location
-	 * @param mData  MinionData from config
-	 * @param level  Minion level
-	 * @param ite    Minion items quantity
-	 * @param mon    Minion money
-	 * @param player UUID of the player who placed the minion
-	 */
-	private BaseMinion(Location loc, MinionData mData, int level, int ite, long mon, UUID player) {
+	public BaseMinion(Location loc, MinionData mData, int level, int ite, long mon, UUID player) {
+		this.setIdentifier(this.getClass().getName());
 		this.setMenuTitle(mData.getMinionName() + " level " + level);
 		this.setMinionData(mData);
 		this.minionLocation = loc;
@@ -249,10 +238,12 @@ public class BaseMinion implements ConfigurationSerializable {
 	@SuppressWarnings("unchecked")
 	public static BaseMinion deserialize(Map<String, Object> map) {
 		try {
-			return new BaseMinion(Location.deserialize((Map<String, Object>) map.get("minion_location")),
-					JSONMinionData.deserialize((String) map.get("minion_data")), ((Number) map.get("level")).intValue(),
-					((Number) map.get("items")).intValue(), (long) map.get("money"),
-					UUID.fromString((String) map.get("player_uuid")));
+			return (BaseMinion) Class.forName((String) map.get("minion_type"))
+					.getConstructor(Location.class, MinionData.class, int.class, int.class, long.class, UUID.class)
+					.newInstance(Location.deserialize((Map<String, Object>) map.get("minion_location")),
+							JSONMinionData.deserialize((String) map.get("minion_data")),
+							((Number) map.get("level")).intValue(), ((Number) map.get("items")).intValue(),
+							(long) map.get("money"), UUID.fromString((String) map.get("player_uuid")));
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
@@ -264,7 +255,8 @@ public class BaseMinion implements ConfigurationSerializable {
 	 */
 	public Map<String, Object> serialize() {
 		return ImmutableMap.<String, Object>builder().put("minion_location", minionLocation.serialize())
-				.put("minion_data", JSONMinionData.serialize(minionData)).put("level", level).put("items", items)
-				.put("money", (long) money).put("player_uuid", playerUuid.toString()).build();
+				.put("minion_type", identifier).put("minion_data", JSONMinionData.serialize(minionData))
+				.put("level", level).put("items", items).put("money", (long) money)
+				.put("player_uuid", playerUuid.toString()).build();
 	}
 }

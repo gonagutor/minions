@@ -9,7 +9,7 @@ import com.gonagutor.minions.configs.JSONMinionData;
 import com.gonagutor.minions.configs.MinionConfig;
 import com.gonagutor.minions.configs.MinionData;
 import com.gonagutor.minions.listeners.MinionRightClickListener;
-import com.gonagutor.minions.minions.BaseMinion;
+import com.gonagutor.minions.api.BaseMinion;
 
 import org.bukkit.Bukkit;
 

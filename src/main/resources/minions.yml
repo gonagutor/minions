@@ -4,7 +4,7 @@ minions:
     item_name: §a§lDiamond minion
     item_lore:
       - §7Right click to place minion
-    minion_type: BLOCK_MINION
+    minion_type: com.gonagutor.minions.minions.BlockMinion
     max_level: 10
     minion_name: §aDiamond minion
     drop_material: DIAMOND
@@ -23,7 +23,7 @@ minions:
     item_name: "&4&lOak minion"
     item_lore:
       - "&7Right click to place minion"
-    minion_type: BLOCK_MINION
+    minion_type: com.gonagutor.minions.minions.BlockMinion
     max_level: 10
     minion_name: "&4Oak minion"
     drop_material: OAK_LOG
@@ -42,7 +42,7 @@ minions:
     item_name: "&6&lGold minion"
     item_lore:
       - "&7Right click to place minion"
-    minion_type: BLOCK_MINION
+    minion_type: com.gonagutor.minions.minions.BlockMinion
     max_level: 10
     minion_name: "&4Gold minion"
     drop_material: GOLD_ORE

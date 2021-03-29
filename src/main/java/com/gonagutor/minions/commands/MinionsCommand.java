@@ -67,7 +67,6 @@ public class MinionsCommand implements TabExecutor {
         case "give":
             if (sender instanceof Player) {
                 try {
-                    System.out.println(Integer.parseInt(args[1]));
                     MinionData mData = (MinionData) minionManager.getMinionList().toArray()[Integer.parseInt(args[1])];
                     if (args.length < 3) {
                         givePlayerMinion(mData, (Player) sender);

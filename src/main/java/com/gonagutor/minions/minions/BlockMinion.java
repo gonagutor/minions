@@ -6,6 +6,7 @@ import java.util.UUID;
 import com.gonagutor.minions.Minions;
 import com.gonagutor.minions.configs.MinionData;
 import com.gonagutor.minions.nms.PacketSender;
+import com.gonagutor.minions.api.BaseMinion;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -79,37 +80,18 @@ public class BlockMinion extends BaseMinion {
 	}
 
 	/**
-	 * This constructor creates a new BlockMinion
+	 * This constructor is required for deserialize
 	 * 
-	 * @param minionLoc  Location to spawn the minion on
-	 * @param minionData MinionData to base the minion on
-	 * @param level      Level of the minion to create
-	 * @param player     UUID of player who placed the minion
+	 * @param loc    ArmourStand entity location
+	 * @param mData  MinionData from config
+	 * @param level  Minion level
+	 * @param ite    Minion items quantity
+	 * @param mon    Minion money
+	 * @param player UUID of the player who placed the minion
 	 */
-	public BlockMinion(Location minionLoc, MinionData minionData, int level, UUID player) {
-		super(minionLoc);
-		this.setMinionData(minionData);
-		this.setPlayerUuid(player);
-		this.setLevel(level);
-		this.setMenuTitle(minionData.getMinionName() + " level " + level);
-		this.blockType = minionData.getBlockMaterial();
-		this.setMinionTask(
-				new UpdateNeeded(this).runTaskTimer(Minions.getPlugin(Minions.class), 40, 40 * (10 / this.getLevel())));
-	}
-
-	/**
-	 * This constructor converts a BaseMinion to this kind of Minion
-	 * 
-	 * @param minion BaseMinion to convert
-	 */
-	public BlockMinion(BaseMinion minion) {
-		super(minion.getMinionLocation());
-		this.setMinionData(minion.getMinionData());
-		this.setPlayerUuid(minion.getPlayerUuid());
-		this.setItems(minion.getItems());
-		this.setLevel(minion.getLevel());
-		this.setMenuTitle(minion.getMinionData().getMinionName() + " level " + minion.getLevel());
-		this.blockType = minion.getMinionData().getBlockMaterial();
+	public BlockMinion(Location loc, MinionData mData, int level, int ite, long mon, UUID player) {
+		super(loc, mData, level, ite, mon, player);
+		this.blockType = mData.getBlockMaterial();
 		this.setMinionTask(
 				new UpdateNeeded(this).runTaskTimer(Minions.getPlugin(Minions.class), 40, 40 * (10 / this.getLevel())));
 	}

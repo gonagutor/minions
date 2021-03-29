@@ -4,8 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import com.gonagutor.minions.minions.BaseMinion;
-import com.gonagutor.minions.minions.BlockMinion;
+import com.gonagutor.minions.api.BaseMinion;
 import com.google.common.collect.ImmutableMap;
 
 import org.bukkit.Bukkit;
@@ -27,10 +26,6 @@ import net.md_5.bungee.api.ChatColor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MinionData implements ConfigurationSerializable {
-	public static enum MinionType {
-		BLOCK_MINION
-	}
-
 	@Getter
 	@Setter
 	private String key;
@@ -42,7 +37,7 @@ public class MinionData implements ConfigurationSerializable {
 	private List<String> itemLore;
 	@Getter
 	@Setter
-	private MinionType minionType;
+	private String minionType;
 	@Getter
 	@Setter
 	private Recipe recipe;
@@ -77,7 +72,7 @@ public class MinionData implements ConfigurationSerializable {
 	@Setter
 	private ItemStack tool;
 
-	public MinionData(String itemName, List<String> itemLore, MinionType minionType, Recipe recipe, int maxLevel,
+	public MinionData(String itemName, List<String> itemLore, String minionType, Recipe recipe, int maxLevel,
 			String minionName, Material dropMaterial, Material blockMaterial, Color leatherArmorColor,
 			String skullOwner, ItemStack chest, ItemStack legs, ItemStack boots, ItemStack tool) {
 		this.itemName = itemName;
@@ -132,7 +127,7 @@ public class MinionData implements ConfigurationSerializable {
 				lore.set(lore.indexOf(each), ChatColor.translateAlternateColorCodes('&', each));
 			}
 			return new MinionData(ChatColor.translateAlternateColorCodes('&', (String) map.get("item_name")), lore,
-					MinionType.valueOf((String) map.get("minion_type")), null, // (Recipe) map.get("recipe")
+					(String) map.get("minion_type"), null, // (Recipe) map.get("recipe")
 					((Number) map.get("max_level")).intValue(),
 					ChatColor.translateAlternateColorCodes('&', (String) map.get("minion_name")),
 					Material.valueOf((String) map.get("drop_material")),
@@ -155,7 +150,7 @@ public class MinionData implements ConfigurationSerializable {
 	 */
 	public Map<String, Object> serialize() {
 		return ImmutableMap.<String, Object>builder().put("item_name", itemName).put("item_lore", itemLore)
-				.put("minion_type", minionType.toString())
+				.put("minion_type", minionType)
 				// .put("recipe", recipe)
 				.put("max_level", maxLevel).put("minion_name", minionName).put("drop_material", dropMaterial.toString())
 				.put("block_material", blockMaterial.toString()).put("minion_color", leatherArmorColor.serialize())
@@ -207,29 +202,12 @@ public class MinionData implements ConfigurationSerializable {
 	 * @return Minion with specified parameters
 	 */
 	public BaseMinion toMinion(Location loc, int level, UUID player) {
-		switch (minionType) {
-		case BLOCK_MINION:
-			BlockMinion minion = new BlockMinion(loc, this, level, player);
-			if (leatherArmorColor != null) {
-				ItemStack itemChest = new ItemStack(Material.LEATHER_CHESTPLATE);
-				LeatherArmorMeta chestMeta = (LeatherArmorMeta) itemChest.getItemMeta();
-				chestMeta.setColor(this.leatherArmorColor);
-				itemChest.setItemMeta(chestMeta);
-				ItemStack itemLegs = new ItemStack(Material.LEATHER_LEGGINGS);
-				LeatherArmorMeta legsMeta = (LeatherArmorMeta) itemLegs.getItemMeta();
-				legsMeta.setColor(this.leatherArmorColor);
-				itemLegs.setItemMeta(legsMeta);
-				ItemStack itemBoots = new ItemStack(Material.LEATHER_BOOTS);
-				LeatherArmorMeta bootsMeta = (LeatherArmorMeta) itemBoots.getItemMeta();
-				bootsMeta.setColor(this.leatherArmorColor);
-				itemBoots.setItemMeta(bootsMeta);
-
-				this.setChest(itemChest);
-				this.setLegs(itemLegs);
-				this.setBoots(itemBoots);
-			}
-			return minion;
-		default:
+		try {
+			return (BaseMinion) Class.forName(minionType)
+					.getConstructor(Location.class, MinionData.class, int.class, int.class, long.class, UUID.class)
+					.newInstance(loc, this, level, 0, 0, player);
+		} catch (Exception e) {
+			e.printStackTrace();
 			return null;
 		}
 	}

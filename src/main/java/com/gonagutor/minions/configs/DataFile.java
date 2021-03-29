@@ -11,8 +11,7 @@ import java.util.Set;
 import java.util.logging.Level;
 
 import com.gonagutor.minions.Minions;
-import com.gonagutor.minions.minions.BaseMinion;
-import com.gonagutor.minions.minions.BlockMinion;
+import com.gonagutor.minions.api.BaseMinion;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -96,13 +95,8 @@ public class DataFile {
 		JSONArray array = (JSONArray) this.getConfig().get("player_minions");
 		for (int i = 0; i < array.size(); i++) {
 			BaseMinion minion = BaseMinion.deserialize((Map<String, Object>) array.get(i));
-			switch (minion.getMinionData().getMinionType()) {
-			case BLOCK_MINION:
-				minions.add(new BlockMinion(minion));
-				break;
-			default:
-				break;
-			}
+			System.out.println(minion);
+			minions.add(minion);
 		}
 
 		return minions;
@@ -123,4 +117,5 @@ public class DataFile {
 		this.getConfig().put("player_minions", array);
 		this.saveConfig();
 	}
+
 }
