@@ -1,33 +1,36 @@
 package com.gonagutor.minions.managers;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import com.gonagutor.minions.Minions;
+import com.gonagutor.minions.api.BaseMinion;
 import com.gonagutor.minions.configs.DataFile;
 import com.gonagutor.minions.configs.JSONMinionData;
 import com.gonagutor.minions.configs.MinionConfig;
 import com.gonagutor.minions.configs.MinionData;
 import com.gonagutor.minions.listeners.MinionRightClickListener;
-import com.gonagutor.minions.api.BaseMinion;
-
-import org.bukkit.Bukkit;
-
+import java.util.HashSet;
+import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
+import org.bukkit.Bukkit;
 
 public class MinionManager {
+
 	@Getter
 	@Setter
 	private Set<BaseMinion> minions = new HashSet<>();
+
 	@Getter
 	private Minions plugin;
+
 	@Getter
 	MinionConfig minionConfig;
+
 	@Getter
 	Set<MinionData> minionList;
+
 	@Getter
 	DataFile dataFile;
+
 	@Getter
 	Set<BaseMinion> loadedMinions = new HashSet<>();
 
@@ -48,7 +51,12 @@ public class MinionManager {
 		this.loadedMinions = dataFile.getPlayersMinions();
 		for (BaseMinion minion : loadedMinions) {
 			minion.spawnMinion();
-			Bukkit.getPluginManager().registerEvents(new MinionRightClickListener(this, minion), this.getPlugin());
+			Bukkit
+				.getPluginManager()
+				.registerEvents(
+					new MinionRightClickListener(this, minion),
+					this.getPlugin()
+				);
 		}
 	}
 
@@ -56,8 +64,7 @@ public class MinionManager {
 	 * Despawns all minions to be respawned on server load
 	 */
 	public void deSpawnAllMinions() {
-		if (loadedMinions == null)
-			return;
+		if (loadedMinions == null) return;
 		dataFile.savePlayersMinions(loadedMinions);
 		for (BaseMinion minion : loadedMinions) {
 			minion.getMinion().remove();
@@ -66,7 +73,7 @@ public class MinionManager {
 
 	/**
 	 * Add a minion to the loaded minions list
-	 * 
+	 *
 	 * @param minion Minion to save to config
 	 */
 	public void newMinionPlaced(BaseMinion minion) {
@@ -76,7 +83,7 @@ public class MinionManager {
 
 	/**
 	 * Removes minion from loaded minions
-	 * 
+	 *
 	 * @param minion Minion to remove
 	 */
 	public void removeMinion(BaseMinion minion) {

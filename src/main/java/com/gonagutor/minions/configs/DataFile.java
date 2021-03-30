@@ -1,5 +1,9 @@
 package com.gonagutor.minions.configs;
 
+import com.gonagutor.minions.Minions;
+import com.gonagutor.minions.api.BaseMinion;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
@@ -9,17 +13,12 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
-
-import com.gonagutor.minions.Minions;
-import com.gonagutor.minions.api.BaseMinion;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 public class DataFile {
+
 	private Minions plugin;
 	private JSONObject json;
 	private JSONParser parser = new JSONParser();
@@ -34,10 +33,16 @@ public class DataFile {
 	 * Reloads the config json file
 	 */
 	public void reloadConfig() {
-		if (this.dataFile == null)
-			this.dataFile = new File(this.plugin.getDataFolder(), "data.json");
+		if (this.dataFile == null) this.dataFile =
+			new File(this.plugin.getDataFolder(), "data.json");
 		try {
-			this.json = (JSONObject) parser.parse(new InputStreamReader(new FileInputStream(this.dataFile), "UTF-8"));
+			this.json =
+				(JSONObject) parser.parse(
+					new InputStreamReader(
+						new FileInputStream(this.dataFile),
+						"UTF-8"
+					)
+				);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -45,12 +50,11 @@ public class DataFile {
 
 	/**
 	 * Gets the json object containing the player minions
-	 * 
+	 *
 	 * @return JSONObject containing the minions
 	 */
 	public JSONObject getConfig() {
-		if (this.json == null)
-			reloadConfig();
+		if (this.json == null) reloadConfig();
 		return this.json;
 	}
 
@@ -58,8 +62,7 @@ public class DataFile {
 	 * Saves the json file. Pretty printed
 	 */
 	public void saveConfig() {
-		if (this.json == null || this.dataFile == null)
-			return;
+		if (this.json == null || this.dataFile == null) return;
 		try {
 			Gson g = new GsonBuilder().setPrettyPrinting().create();
 			FileWriter fw = new FileWriter(this.dataFile);
@@ -67,8 +70,15 @@ public class DataFile {
 			fw.flush();
 			fw.close();
 		} catch (IOException e) {
-			plugin.getLogger().log(Level.SEVERE, Minions.getPrefix() + "File could not be saved in: " + this.dataFile,
-					e);
+			plugin
+				.getLogger()
+				.log(
+					Level.SEVERE,
+					Minions.getPrefix() +
+					"File could not be saved in: " +
+					this.dataFile,
+					e
+				);
 		}
 	}
 
@@ -77,8 +87,8 @@ public class DataFile {
 	 * config folder
 	 */
 	public void saveDefaultConfig() {
-		if (this.dataFile == null)
-			this.dataFile = new File(this.plugin.getDataFolder(), "data.json");
+		if (this.dataFile == null) this.dataFile =
+			new File(this.plugin.getDataFolder(), "data.json");
 		if (!this.dataFile.exists()) {
 			this.plugin.saveResource("data.json", false);
 		}
@@ -86,7 +96,7 @@ public class DataFile {
 
 	/**
 	 * Recovers the config
-	 * 
+	 *
 	 * @return Set containing player minions
 	 */
 	@SuppressWarnings("unchecked")
@@ -94,8 +104,9 @@ public class DataFile {
 		Set<BaseMinion> minions = new HashSet<>();
 		JSONArray array = (JSONArray) this.getConfig().get("player_minions");
 		for (int i = 0; i < array.size(); i++) {
-			BaseMinion minion = BaseMinion.deserialize((Map<String, Object>) array.get(i));
-			System.out.println(minion);
+			BaseMinion minion = BaseMinion.deserialize(
+				(Map<String, Object>) array.get(i)
+			);
 			minions.add(minion);
 		}
 
@@ -104,7 +115,7 @@ public class DataFile {
 
 	/**
 	 * Saves player minions to the json file
-	 * 
+	 *
 	 * @param minions Set containing player's minions
 	 */
 	@SuppressWarnings("unchecked")
@@ -117,5 +128,4 @@ public class DataFile {
 		this.getConfig().put("player_minions", array);
 		this.saveConfig();
 	}
-
 }
