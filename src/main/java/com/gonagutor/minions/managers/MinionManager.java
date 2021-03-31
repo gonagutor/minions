@@ -14,25 +14,12 @@ import lombok.Setter;
 import org.bukkit.Bukkit;
 
 public class MinionManager {
-
-	@Getter
-	@Setter
-	private Set<BaseMinion> minions = new HashSet<>();
-
-	@Getter
-	private Minions plugin;
-
-	@Getter
-	MinionConfig minionConfig;
-
-	@Getter
-	Set<MinionData> minionList;
-
-	@Getter
-	DataFile dataFile;
-
-	@Getter
-	Set<BaseMinion> loadedMinions = new HashSet<>();
+	@Getter @Setter private Set<BaseMinion> minions = new HashSet<>();
+	@Getter private Minions plugin;
+	@Getter MinionConfig minionConfig;
+	@Getter Set<MinionData> minionList;
+	@Getter DataFile dataFile;
+	@Getter Set<BaseMinion> loadedMinions = new HashSet<>();
 
 	public MinionManager(Minions pl) {
 		this.plugin = pl;
@@ -51,12 +38,7 @@ public class MinionManager {
 		this.loadedMinions = dataFile.getPlayersMinions();
 		for (BaseMinion minion : loadedMinions) {
 			minion.spawnMinion();
-			Bukkit
-				.getPluginManager()
-				.registerEvents(
-					new MinionRightClickListener(this, minion),
-					this.getPlugin()
-				);
+			Bukkit.getPluginManager().registerEvents(new MinionRightClickListener(this, minion), this.getPlugin());
 		}
 	}
 

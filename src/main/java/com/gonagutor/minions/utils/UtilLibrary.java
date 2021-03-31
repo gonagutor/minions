@@ -1,7 +1,6 @@
 package com.gonagutor.minions.utils;
 
 public class UtilLibrary {
-
 	// Joinked from https://stackoverflow.com/questions/12967896/converting-integers-to-roman-numerals-java/12968022
 	public static String intToRoman(int num) {
 		StringBuilder str = new StringBuilder();
@@ -35,7 +34,6 @@ public class UtilLibrary {
 	}
 
 	private static class RomanDataStore {
-
 		private int val;
 		private String s;
 

@@ -36,13 +36,7 @@ public class DataFile {
 		if (this.dataFile == null) this.dataFile =
 			new File(this.plugin.getDataFolder(), "data.json");
 		try {
-			this.json =
-				(JSONObject) parser.parse(
-					new InputStreamReader(
-						new FileInputStream(this.dataFile),
-						"UTF-8"
-					)
-				);
+			this.json = (JSONObject) parser.parse(new InputStreamReader(new FileInputStream(this.dataFile), "UTF-8"));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -70,15 +64,9 @@ public class DataFile {
 			fw.flush();
 			fw.close();
 		} catch (IOException e) {
-			plugin
-				.getLogger()
-				.log(
-					Level.SEVERE,
-					Minions.getPrefix() +
-					"File could not be saved in: " +
-					this.dataFile,
-					e
-				);
+			plugin.getLogger().log(Level.SEVERE, 
+				Minions.getPrefix() + "File could not be saved in: "+ this.dataFile, e
+			);
 		}
 	}
 
@@ -104,9 +92,7 @@ public class DataFile {
 		Set<BaseMinion> minions = new HashSet<>();
 		JSONArray array = (JSONArray) this.getConfig().get("player_minions");
 		for (int i = 0; i < array.size(); i++) {
-			BaseMinion minion = BaseMinion.deserialize(
-				(Map<String, Object>) array.get(i)
-			);
+			BaseMinion minion = BaseMinion.deserialize((Map<String, Object>) array.get(i));
 			minions.add(minion);
 		}
 

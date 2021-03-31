@@ -15,12 +15,7 @@ public class PacketSender {
 	 */
 	private Class<?> getNMSClass(String className) {
 		try {
-			return Class.forName(
-				"net.minecraft.server." +
-				Bukkit.getServer().getClass().getPackageName().split("\\.")[3] +
-				"." +
-				className
-			);
+			return Class.forName("net.minecraft.server." + Bukkit.getServer().getClass().getPackageName().split("\\.")[3] + "." + className);
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -36,26 +31,12 @@ public class PacketSender {
 	 */
 	private Object buildPacket(Location block, int state) {
 		try {
-			Constructor<?> blockConstructor = getNMSClass("BlockPosition")
-				.getConstructor(int.class, int.class, int.class);
-			Object blockPosition = blockConstructor.newInstance(
-				block.getBlockX(),
-				block.getBlockY(),
-				block.getBlockZ()
-			);
-			Constructor<?> packetConstructor = getNMSClass(
-				"PacketPlayOutBlockBreakAnimation"
-			)
-				.getConstructor(
-					int.class,
-					getNMSClass("BlockPosition"),
-					int.class
-				);
-			Object packet = packetConstructor.newInstance(
-				(int) Math.random() * 1000,
-				blockPosition,
-				state
-			);
+			Constructor<?> blockConstructor = getNMSClass("BlockPosition").getConstructor(int.class, int.class, int.class);
+			Object blockPosition = blockConstructor.newInstance(block.getBlockX(), block.getBlockY(), block.getBlockZ());
+			Constructor<?> packetConstructor = getNMSClass("PacketPlayOutBlockBreakAnimation")
+				.getConstructor(int.class,getNMSClass("BlockPosition"), int.class);
+			Object packet = packetConstructor.newInstance((int) Math.random() * 1000,blockPosition, state);
+
 			return packet;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -75,14 +56,8 @@ public class PacketSender {
 			Object packet = buildPacket(block, state);
 			for (Player p : Bukkit.getOnlinePlayers()) {
 				Object handle = p.getClass().getMethod("getHandle").invoke(p);
-				Object playerConnection = handle
-					.getClass()
-					.getField("playerConnection")
-					.get(handle);
-				playerConnection
-					.getClass()
-					.getMethod("sendPacket", getNMSClass("Packet"))
-					.invoke(playerConnection, packet);
+				Object playerConnection = handle.getClass().getField("playerConnection").get(handle);
+				playerConnection.getClass().getMethod("sendPacket", getNMSClass("Packet")).invoke(playerConnection, packet);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

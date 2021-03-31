@@ -1,5 +1,6 @@
 package com.gonagutor.minions.listeners;
 
+import com.gonagutor.minions.Minions;
 import com.gonagutor.minions.api.BaseMinion;
 import com.gonagutor.minions.guis.MinionInteractGui;
 import com.gonagutor.minions.managers.MinionManager;
@@ -25,13 +26,8 @@ public class MinionRightClickListener implements Listener {
 		if (minion.getMinion() != e.getRightClicked()) return;
 		if (!e.getPlayer().getUniqueId().equals(minion.getPlayerUuid())) return;
 
-		MinionInteractGui minionInteractGui = new MinionInteractGui(
-			minion,
-			minionManager
-		);
-		Bukkit
-			.getPluginManager()
-			.registerEvents(minionInteractGui, minionManager.getPlugin());
+		MinionInteractGui minionInteractGui = new MinionInteractGui(minion, minionManager);
+		Bukkit.getPluginManager().registerEvents(minionInteractGui, Minions.getPlugin(Minions.class));
 		minionInteractGui.openInventory(e.getPlayer());
 	}
 }

@@ -25,48 +25,17 @@ import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
 
 public abstract class BaseMinion {
-
-	@Getter
-	private ArmorStand minion;
-
-	@Getter
-	private Location minionLocation;
-
-	@Getter
-	@Setter
-	private MinionData minionData;
-
-	@Getter
-	@Setter
-	private String identifier;
-
-	@Getter
-	@Setter
-	private int level;
-
-	@Getter
-	@Setter
-	private String menuTitle;
-
-	@Getter
-	@Setter
-	private BukkitTask minionTask;
-
-	@Getter
-	@Setter
-	private int items;
-
-	@Getter
-	@Setter
-	private long money;
-
-	@Getter
-	@Setter
-	private UUID playerUuid;
-
-	@Getter
-	@Setter
-	private Material[] idealLayout = new Material[24];
+	@Getter	private ArmorStand minion;
+	@Getter	private Location minionLocation;
+	@Getter	@Setter	private MinionData minionData;
+	@Getter	@Setter	private String identifier;
+	@Getter	@Setter	private int level;
+	@Getter	@Setter	private String menuTitle;
+	@Getter	@Setter	private BukkitTask minionTask;
+	@Getter	@Setter	private int items;
+	@Getter	@Setter	private long money;
+	@Getter	@Setter	private UUID playerUuid;
+	@Getter	@Setter	private Material[] idealLayout = new Material[24];
 
 	/**
 	 * This must be super(ed) by any minion extension
@@ -78,20 +47,9 @@ public abstract class BaseMinion {
 	 * @param mon How much money does the minion have in it's inventory
 	 * @param player UUID of the player who placed the minion
 	 */
-	public BaseMinion(
-		Location loc,
-		MinionData mData,
-		int level,
-		int ite,
-		long mon,
-		UUID player
-	) {
+	public BaseMinion(Location loc, MinionData mData, int level, int ite, long mon, UUID player) {
 		this.setIdentifier(this.getClass().getName());
-		this.setMenuTitle(
-				mData.getMinionName() +
-				" level " +
-				UtilLibrary.intToRoman(level)
-			);
+		this.setMenuTitle(mData.getMinionName() + " level " + UtilLibrary.intToRoman(level));
 		this.setMinionData(mData);
 		this.minionLocation = loc;
 		this.setLevel(level);
@@ -105,49 +63,28 @@ public abstract class BaseMinion {
 	 * equipment to entity, including custom skull.
 	 */
 	public void spawnMinion() {
-		this.minion =
-			(ArmorStand) minionLocation
-				.getWorld()
-				.spawnEntity(minionLocation, EntityType.ARMOR_STAND);
+		this.minion = (ArmorStand) minionLocation.getWorld().spawnEntity(minionLocation, EntityType.ARMOR_STAND);
 		this.minion.setSmall(true);
 		this.minion.setInvulnerable(true);
 		this.minion.setGravity(false);
 		this.minion.setArms(true);
 		this.minion.setBasePlate(false);
-		this.minion.addEquipmentLock(
-				EquipmentSlot.HAND,
-				LockType.REMOVING_OR_CHANGING
-			);
-		this.minion.addEquipmentLock(
-				EquipmentSlot.HEAD,
-				LockType.REMOVING_OR_CHANGING
-			);
-		this.minion.addEquipmentLock(
-				EquipmentSlot.CHEST,
-				LockType.REMOVING_OR_CHANGING
-			);
-		this.minion.addEquipmentLock(
-				EquipmentSlot.LEGS,
-				LockType.REMOVING_OR_CHANGING
-			);
-		this.minion.addEquipmentLock(
-				EquipmentSlot.FEET,
-				LockType.REMOVING_OR_CHANGING
-			);
+		this.minion.addEquipmentLock(EquipmentSlot.HAND, LockType.REMOVING_OR_CHANGING);
+		this.minion.addEquipmentLock(EquipmentSlot.HEAD, LockType.REMOVING_OR_CHANGING);
+		this.minion.addEquipmentLock(EquipmentSlot.CHEST,LockType.REMOVING_OR_CHANGING);
+		this.minion.addEquipmentLock(EquipmentSlot.LEGS,LockType.REMOVING_OR_CHANGING);
+		this.minion.addEquipmentLock(EquipmentSlot.FEET,LockType.REMOVING_OR_CHANGING);
 		minion.getEquipment().setHelmet(minionData.toSkull(1));
 
-		if (this.getMinionData().getChest() != null) minion
-			.getEquipment()
-			.setChestplate(this.getMinionData().getChest());
-		if (this.getMinionData().getLegs() != null) minion
-			.getEquipment()
-			.setLeggings(this.getMinionData().getLegs());
-		if (this.getMinionData().getBoots() != null) minion
-			.getEquipment()
-			.setBoots(this.getMinionData().getBoots());
-		if (this.getMinionData().getTool() != null) minion
-			.getEquipment()
-			.setItemInMainHand(this.getMinionData().getTool());
+
+		if (this.getMinionData().getChest() != null)
+			minion.getEquipment().setChestplate(this.getMinionData().getChest());
+		if (this.getMinionData().getLegs() != null) 
+			minion.getEquipment().setLeggings(this.getMinionData().getLegs());
+		if (this.getMinionData().getBoots() != null) 
+			minion.getEquipment().setBoots(this.getMinionData().getBoots());
+		if (this.getMinionData().getTool() != null) 
+			minion.getEquipment().setItemInMainHand(this.getMinionData().getTool());
 	}
 
 	public void setMinionName(String name) {
@@ -171,24 +108,10 @@ public abstract class BaseMinion {
 			float x = minionRadius - sqx;
 			for (float sqz = 0; sqz < minionRadius * 2 + 1; sqz++) {
 				float z = minionRadius - sqz;
-				Block block = new Location(
-					minionLocation.getWorld(),
-					minionLocation.getX() + x,
-					minionLocation.getY() - 1,
-					minionLocation.getZ() + z
-				)
-					.getBlock();
+				Block block = new Location(minionLocation.getWorld(), minionLocation.getX() + x, minionLocation.getY() - 1, minionLocation.getZ() + z).getBlock();
 				blocks.add(block);
 			}
-			blocks.remove(
-				new Location(
-					minionLocation.getWorld(),
-					minionLocation.getX(),
-					minionLocation.getY() - 1,
-					minionLocation.getZ()
-				)
-					.getBlock()
-			);
+			blocks.remove(new Location(minionLocation.getWorld(), minionLocation.getX(), minionLocation.getY() - 1, minionLocation.getZ()).getBlock());
 		}
 		return (blocks);
 	}
@@ -268,11 +191,7 @@ public abstract class BaseMinion {
 		Vector lookDirection = target.getLocation().toVector().clone();
 		lookDirection.subtract(lookHere.toVector());
 
-		Vector direction = target
-			.getLocation()
-			.toVector()
-			.subtract(lookHere.add(0.5, 0.5, 0.5).toVector())
-			.normalize();
+		Vector direction = target.getLocation().toVector().subtract(lookHere.add(0.5, 0.5, 0.5).toVector()).normalize();
 		double x = direction.getX();
 		double y = direction.getY();
 		double z = direction.getZ();
@@ -281,9 +200,7 @@ public abstract class BaseMinion {
 		changed.setYaw(180 - (float) Math.toDegrees(Math.atan2(x, z)));
 		changed.setPitch(90 - (float) Math.toDegrees(Math.acos(y)));
 
-		target.setHeadPose(
-			new EulerAngle(Math.asin(1 / lookDirection.length()), 0, 0)
-		);
+		target.setHeadPose(new EulerAngle(Math.asin(1 / lookDirection.length()), 0, 0));
 		target.teleport(changed);
 	}
 
@@ -293,7 +210,6 @@ public abstract class BaseMinion {
 	public void playOutBreakAnimation() {
 		ArmorStand target = this.getMinion();
 		final class AnimateBreak extends BukkitRunnable {
-
 			ArmorStand armorStand;
 			Boolean forward = true;
 
@@ -303,28 +219,24 @@ public abstract class BaseMinion {
 
 			@Override
 			public void run() {
-				if (armorStand.getRightArmPose().getX() < -0.5) forward = false;
-				if (armorStand.getRightArmPose().getX() > -0.1) forward = true;
+				if (armorStand.getRightArmPose().getX() < -0.5)
+					forward = false;
+				if (armorStand.getRightArmPose().getX() > -0.1)
+					forward = true;
 
-				if (forward) armorStand.setRightArmPose(
-					armorStand.getRightArmPose().subtract(0.1, 0, 0)
-				); else armorStand.setRightArmPose(
-					armorStand.getRightArmPose().add(0.1, 0, 0)
-				);
+				if (forward)
+					armorStand.setRightArmPose(armorStand.getRightArmPose().subtract(0.1, 0, 0));
+				else 
+					armorStand.setRightArmPose(armorStand.getRightArmPose().add(0.1, 0, 0));
 			}
 		}
-		BukkitTask animation = new AnimateBreak(target)
-		.runTaskTimer(Minions.getPlugin(Minions.class), 0, 1);
-		Bukkit
-			.getScheduler()
-			.runTaskLater(
-				Minions.getPlugin(Minions.class),
-				() -> {
-					animation.cancel();
-					this.restorePose();
-				},
-				20
-			);
+		BukkitTask animation = new AnimateBreak(target).runTaskTimer(Minions.getPlugin(Minions.class), 0, 1);
+		Bukkit.getScheduler().runTaskLater(Minions.getPlugin(Minions.class),
+			() -> {
+				animation.cancel();
+				this.restorePose();
+			}, 20
+		);
 	}
 
 	/**
@@ -334,7 +246,6 @@ public abstract class BaseMinion {
 		this.getMinion().setRightArmPose(new EulerAngle(-3, 0, 0));
 		this.getMinion().setLeftArmPose(new EulerAngle(-3, 0, 0));
 		final class AnimatePlace extends BukkitRunnable {
-
 			ArmorStand armorStand;
 
 			public AnimatePlace(ArmorStand as) {
@@ -350,18 +261,13 @@ public abstract class BaseMinion {
 				}
 			}
 		}
-		BukkitTask animation = new AnimatePlace(this.getMinion())
-		.runTaskTimer(Minions.getPlugin(Minions.class), 0, 1);
-		Bukkit
-			.getScheduler()
-			.runTaskLater(
-				Minions.getPlugin(Minions.class),
-				() -> {
-					animation.cancel();
-					this.restorePose();
-				},
-				20
-			);
+		BukkitTask animation = new AnimatePlace(this.getMinion()).runTaskTimer(Minions.getPlugin(Minions.class), 0, 1);
+		Bukkit.getScheduler().runTaskLater(Minions.getPlugin(Minions.class),
+			() -> {
+				animation.cancel();
+				this.restorePose();
+			}, 20
+		);
 	}
 
 	/* ----------- Serialization Utilities ----------- */
@@ -380,20 +286,10 @@ public abstract class BaseMinion {
 	@SuppressWarnings("unchecked")
 	public static BaseMinion deserialize(Map<String, Object> map) {
 		try {
-			return (BaseMinion) Class
-				.forName((String) map.get("minion_type"))
-				.getConstructor(
-					Location.class,
-					MinionData.class,
-					int.class,
-					int.class,
-					long.class,
-					UUID.class
-				)
+			return (BaseMinion) Class.forName((String) map.get("minion_type"))
+				.getConstructor(Location.class, MinionData.class, int.class, int.class, long.class, UUID.class)
 				.newInstance(
-					Location.deserialize(
-						(Map<String, Object>) map.get("minion_location")
-					),
+					Location.deserialize((Map<String, Object>) map.get("minion_location")),
 					JSONMinionData.deserialize((String) map.get("minion_data")),
 					((Number) map.get("level")).intValue(),
 					((Number) map.get("items")).intValue(),

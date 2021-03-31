@@ -27,83 +27,23 @@ import org.bukkit.persistence.PersistentDataType;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MinionData implements ConfigurationSerializable {
+	@Getter @Setter private String key;
+	@Getter @Setter private String itemName;
+	@Getter @Setter private List<String> itemLore;
+	@Getter @Setter private String minionType;
+	@Getter @Setter private Recipe recipe;
+	@Getter @Setter private int maxLevel;
+	@Getter @Setter private String minionName;
+	@Getter @Setter private Material dropMaterial;
+	@Getter @Setter private Material blockMaterial;
+	@Getter @Setter private Color leatherArmorColor;
+	@Getter @Setter private String skullOwner;
+	@Getter @Setter private ItemStack chest;
+	@Getter @Setter private ItemStack legs;
+	@Getter @Setter private ItemStack boots;
+	@Getter @Setter private ItemStack tool;
 
-	@Getter
-	@Setter
-	private String key;
-
-	@Getter
-	@Setter
-	private String itemName;
-
-	@Getter
-	@Setter
-	private List<String> itemLore;
-
-	@Getter
-	@Setter
-	private String minionType;
-
-	@Getter
-	@Setter
-	private Recipe recipe;
-
-	@Getter
-	@Setter
-	private int maxLevel;
-
-	@Getter
-	@Setter
-	private String minionName;
-
-	@Getter
-	@Setter
-	private Material dropMaterial;
-
-	@Getter
-	@Setter
-	private Material blockMaterial;
-
-	@Getter
-	@Setter
-	private Color leatherArmorColor;
-
-	@Getter
-	@Setter
-	private String skullOwner;
-
-	@Getter
-	@Setter
-	private ItemStack chest;
-
-	@Getter
-	@Setter
-	private ItemStack legs;
-
-	@Getter
-	@Setter
-	private ItemStack boots;
-
-	@Getter
-	@Setter
-	private ItemStack tool;
-
-	public MinionData(
-		String itemName,
-		List<String> itemLore,
-		String minionType,
-		Recipe recipe,
-		int maxLevel,
-		String minionName,
-		Material dropMaterial,
-		Material blockMaterial,
-		Color leatherArmorColor,
-		String skullOwner,
-		ItemStack chest,
-		ItemStack legs,
-		ItemStack boots,
-		ItemStack tool
-	) {
+	public MinionData(String itemName, List<String> itemLore, String minionType, Recipe recipe, int maxLevel, String minionName, Material dropMaterial, Material blockMaterial, Color leatherArmorColor, String skullOwner, ItemStack chest, ItemStack legs, ItemStack boots, ItemStack tool) {
 		this.itemName = itemName;
 		this.itemLore = itemLore;
 		this.minionType = minionType;
@@ -148,33 +88,21 @@ public class MinionData implements ConfigurationSerializable {
 	public static MinionData deserialize(Map<String, Object> map) {
 		try {
 			List<String> lore = null;
-			if (map.get("item_lore") instanceof List<?>) lore =
-				(List<String>) map.get("item_lore");
+			if (map.get("item_lore") instanceof List<?>) lore = (List<String>) map.get("item_lore");
 			if (lore == null) return null;
 			for (String each : lore) {
-				lore.set(
-					lore.indexOf(each),
-					ChatColor.translateAlternateColorCodes('&', each)
-				);
+				lore.set(lore.indexOf(each), ChatColor.translateAlternateColorCodes('&', each));
 			}
 			return new MinionData(
-				ChatColor.translateAlternateColorCodes(
-					'&',
-					(String) map.get("item_name")
-				),
+				ChatColor.translateAlternateColorCodes('&', (String) map.get("item_name")),
 				lore,
 				(String) map.get("minion_type"),
 				null, // (Recipe) map.get("recipe")
 				((Number) map.get("max_level")).intValue(),
-				ChatColor.translateAlternateColorCodes(
-					'&',
-					(String) map.get("minion_name")
-				),
+				ChatColor.translateAlternateColorCodes('&', (String) map.get("minion_name")),
 				Material.valueOf((String) map.get("drop_material")),
 				Material.valueOf((String) map.get("block_material")),
-				Color.deserialize(
-					(Map<String, Object>) map.get("minion_color")
-				),
+				Color.deserialize((Map<String, Object>) map.get("minion_color")),
 				(String) map.get("skull_owner"),
 				new ItemStack(Material.valueOf((String) map.get("chestplate"))),
 				new ItemStack(Material.valueOf((String) map.get("leggins"))),
@@ -193,8 +121,7 @@ public class MinionData implements ConfigurationSerializable {
 	 * @return Map of this MinionData
 	 */
 	public Map<String, Object> serialize() {
-		return ImmutableMap
-			.<String, Object>builder()
+		return ImmutableMap.<String, Object>builder()
 			.put("item_name", itemName)
 			.put("item_lore", itemLore)
 			.put("minion_type", minionType)
@@ -234,33 +161,19 @@ public class MinionData implements ConfigurationSerializable {
 	 */
 	@SuppressWarnings("deprecation")
 	public ItemStack toSkull(int level) {
-		Boolean isUrl =
-			skullOwner.contains("http://") || skullOwner.contains("https://");
+		Boolean isUrl = skullOwner.contains("http://") || skullOwner.contains("https://");
 		ItemStack item = new ItemStack(Material.PLAYER_HEAD, 1);
+
 		if (isUrl) item = CustomSkull.skullFromImage(item, skullOwner);
 		SkullMeta meta = (SkullMeta) item.getItemMeta();
-
-		meta.setDisplayName(
-			this.itemName + " level " + UtilLibrary.intToRoman(level)
-		);
+		meta.setDisplayName(this.itemName + " level " + UtilLibrary.intToRoman(level));
 		meta.setLore(this.itemLore);
-		NamespacedKey minionType = new NamespacedKey(
-			Minions.getPlugin(Minions.class),
-			"minion_type"
-		);
-		meta
-			.getPersistentDataContainer()
-			.set(minionType, PersistentDataType.STRING, this.minionType);
-		NamespacedKey minionLevel = new NamespacedKey(
-			Minions.getPlugin(Minions.class),
-			"minion_level"
-		);
-		meta
-			.getPersistentDataContainer()
-			.set(minionLevel, PersistentDataType.INTEGER, level);
-		if (!isUrl) meta.setOwningPlayer(
-			Bukkit.getOfflinePlayer(this.skullOwner)
-		);
+		NamespacedKey minionType = new NamespacedKey(Minions.getPlugin(Minions.class), "minion_type");
+		meta.getPersistentDataContainer().set(minionType, PersistentDataType.STRING, this.minionType);
+		NamespacedKey minionLevel = new NamespacedKey(Minions.getPlugin(Minions.class), "minion_level");
+		meta.getPersistentDataContainer().set(minionLevel, PersistentDataType.INTEGER, level);
+
+		if (!isUrl) meta.setOwningPlayer(Bukkit.getOfflinePlayer(this.skullOwner));
 		item.setItemMeta(meta);
 		return item;
 	}
@@ -275,16 +188,8 @@ public class MinionData implements ConfigurationSerializable {
 	 */
 	public BaseMinion toMinion(Location loc, int level, UUID player) {
 		try {
-			return (BaseMinion) Class
-				.forName(minionType)
-				.getConstructor(
-					Location.class,
-					MinionData.class,
-					int.class,
-					int.class,
-					long.class,
-					UUID.class
-				)
+			return (BaseMinion) Class.forName(minionType)
+				.getConstructor(Location.class, MinionData.class, int.class, int.class, long.class, UUID.class)
 				.newInstance(loc, this, level, 0, 0, player);
 		} catch (Exception e) {
 			e.printStackTrace();

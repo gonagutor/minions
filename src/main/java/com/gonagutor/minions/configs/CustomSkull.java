@@ -35,23 +35,12 @@ public class CustomSkull {
 			return skull;
 		}
 		try {
-			GameProfile newSkinProfile = new GameProfile(
-				UUID.randomUUID(),
-				null
-			);
+			GameProfile newSkinProfile = new GameProfile(UUID.randomUUID(), null);
 			Field profileField = null;
 
-			newSkinProfile
-				.getProperties()
-				.put(
-					"textures",
-					new Property(
-						"textures",
-						Base64Coder.encodeString(
-							"{textures:{SKIN:{url:\"" + url + "\"}}}"
-						)
-					)
-				);
+			newSkinProfile.getProperties().put("textures",
+				new Property("textures", Base64Coder.encodeString("{textures:{SKIN:{url:\"" + url + "\"}}}"))
+			);
 			profileField = meta.getClass().getDeclaredField("profile");
 			profileField.setAccessible(true);
 			profileField.set(meta, newSkinProfile);

@@ -12,10 +12,7 @@ import org.bukkit.Bukkit;
 // This way I don't need to pass around an instance of the config to every minion which seemed janky
 
 public class JSONMinionData {
-
-	@Getter
-	@Setter
-	private static MinionManager minionManager;
+	@Getter @Setter private static MinionManager minionManager;
 
 	/**
 	 * This functions deserializes a minion based on the key
@@ -28,36 +25,18 @@ public class JSONMinionData {
 		for (MinionData minion : minionManager.getMinionList()) {
 			if (minion.getKey().equals(key)) return minion;
 		}
-		Bukkit
-			.getLogger()
-			.severe(
-				Minions.getPrefix() +
-				ChatColor.RED +
-				"There was a place minion with a key that no longer exists. (Missing key: " +
-				key +
-				")"
-			);
-		Bukkit
-			.getLogger()
-			.severe(
-				Minions.getPrefix() +
-				ChatColor.RED +
-				"This is a severe error, the plugin will disable itself until this is fixed."
-			);
-		Bukkit
-			.getLogger()
-			.severe(
-				Minions.getPrefix() +
-				ChatColor.RED +
-				"Possible solutions include removing minions containing the key from the file data.json or adding a new key under minions with the missing key name"
-			);
-		Bukkit
-			.getLogger()
-			.severe(
-				Minions.getPrefix() +
-				ChatColor.RED +
-				"Other solution is to rollback the changes and use the admin command to remove all instances of this minion"
-			);
+		Bukkit.getLogger().severe(Minions.getPrefix() +
+			ChatColor.RED + "There was a place minion with a key that no longer exists. (Missing key: " + key +")"
+		);
+		Bukkit.getLogger().severe(Minions.getPrefix() +
+			ChatColor.RED + "This is a severe error, the plugin will disable itself until this is fixed."
+		);
+		Bukkit.getLogger().severe(Minions.getPrefix() +
+			ChatColor.RED + "Possible solutions include removing minions containing the key from the file data.json or adding a new key under minions with the missing key name"
+		);
+		Bukkit.getLogger().severe(Minions.getPrefix() +
+			ChatColor.RED + "Other solution is to rollback the changes and use the admin command to remove all instances of this minion"
+		);
 		Bukkit.getPluginManager().disablePlugin(minionManager.getPlugin());
 		return null;
 	}

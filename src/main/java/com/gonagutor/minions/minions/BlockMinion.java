@@ -15,10 +15,7 @@ import org.bukkit.block.Block;
 import org.bukkit.scheduler.BukkitRunnable;
 
 public class BlockMinion extends BaseMinion {
-
-	@Getter
-	@Setter
-	private Material blockType;
+	@Getter @Setter private Material blockType;
 
 	/**
 	 * This BukkitRunnable will be instantiated when the minion need to break a
@@ -29,7 +26,6 @@ public class BlockMinion extends BaseMinion {
 	 * lower levels
 	 */
 	private class UpdateNeeded extends BukkitRunnable {
-
 		private BlockMinion minion;
 
 		public UpdateNeeded(BlockMinion mnn) {
@@ -49,12 +45,11 @@ public class BlockMinion extends BaseMinion {
 				}
 			}
 			if (minion.getItems() < 64 * getMaxSlots()) {
-				if (!minion.isLayoutIdeal()) minion.setMinionName(
-					ChatColor.YELLOW + "Layout is not ideal"
-				); else minion.clearMinionName();
-				final Block b = (Block) influenceBlocks.toArray()[(int) Math.floor(
-						influenceBlocks.size() * Math.random()
-					)];
+				if (!minion.isLayoutIdeal())
+					minion.setMinionName(ChatColor.YELLOW + "Layout is not ideal");
+				else
+					minion.clearMinionName();
+				final Block b = (Block) influenceBlocks.toArray()[(int) Math.floor(influenceBlocks.size() * Math.random())];
 				minion.playOutBreakAnimation();
 				minion.rotateMinionToLocation(b.getLocation());
 				new BukkitRunnable() {
@@ -63,10 +58,7 @@ public class BlockMinion extends BaseMinion {
 
 					@Override
 					public void run() {
-						if (
-							b.getType() == Material.AIR ||
-							b.getType() != minion.blockType
-						) {
+						if (b.getType() == Material.AIR || b.getType() != minion.blockType) {
 							cancel();
 							return;
 						}
@@ -81,13 +73,9 @@ public class BlockMinion extends BaseMinion {
 						this.cancel();
 						return;
 					}
-				}
-				.runTaskTimer(Minions.getPlugin(Minions.class), 0, 2);
-			} else {
-				minion.setMinionName(
-					ChatColor.RED + "Not enough room on inventory"
-				);
-			}
+				}.runTaskTimer(Minions.getPlugin(Minions.class), 0, 2);
+			} else
+				minion.setMinionName(ChatColor.RED + "Not enough room on inventory");
 		}
 	}
 
@@ -101,27 +89,15 @@ public class BlockMinion extends BaseMinion {
 	 * @param mon    Minion money
 	 * @param player UUID of the player who placed the minion
 	 */
-	public BlockMinion(
-		Location loc,
-		MinionData mData,
-		int level,
-		int ite,
-		long mon,
-		UUID player
-	) {
+	public BlockMinion(Location loc, MinionData mData, int level, int ite, long mon, UUID player) {
 		super(loc, mData, level, ite, mon, player);
 		this.blockType = mData.getBlockMaterial();
 		Material[] iLayout = new Material[24];
-		for (int i = 0; i < 24; i++) iLayout[i] = Material.AIR;
+
+		for (int i = 0; i < 24; i++)
+			iLayout[i] = Material.AIR;
 		this.setIdealLayout(iLayout);
-		this.setMinionTask(
-				new UpdateNeeded(this)
-				.runTaskTimer(
-						Minions.getPlugin(Minions.class),
-						40,
-						40 * (10 / this.getLevel())
-					)
-			);
+		this.setMinionTask(new UpdateNeeded(this).runTaskTimer(Minions.getPlugin(Minions.class), 40, 40 * (10 / this.getLevel())));
 	}
 
 	@Override
@@ -130,10 +106,7 @@ public class BlockMinion extends BaseMinion {
 		int i = 0;
 
 		for (Block b : influenceBlocks) {
-			if (
-				b.getType() != this.getIdealLayout()[i] &&
-				b.getType() != this.blockType
-			) return false;
+			if (b.getType() != this.getIdealLayout()[i] && b.getType() != this.blockType) return false;
 			i++;
 		}
 		return true;

@@ -20,8 +20,7 @@ public class MinionConfig {
 	private FileConfiguration dataConfig = null;
 	private File configFile = null;
 
-	@Getter
-	private Set<MinionData> minionData;
+	@Getter private Set<MinionData> minionData;
 
 	public MinionConfig(Minions pl) {
 		this.plugin = pl;
@@ -32,14 +31,11 @@ public class MinionConfig {
 	 * Reloads config file to get new data
 	 */
 	public void reloadConfig() {
-		if (this.configFile == null) this.configFile =
-			new File(this.plugin.getDataFolder(), "minions.yml");
+		if (this.configFile == null) this.configFile = new File(this.plugin.getDataFolder(), "minions.yml");
 		this.dataConfig = YamlConfiguration.loadConfiguration(this.configFile);
 		InputStream defaultStream = this.plugin.getResource("minions.yml");
 		if (defaultStream != null) {
-			YamlConfiguration defaultConfig = YamlConfiguration.loadConfiguration(
-				new InputStreamReader(defaultStream)
-			);
+			YamlConfiguration defaultConfig = YamlConfiguration.loadConfiguration(new InputStreamReader(defaultStream));
 			this.dataConfig.setDefaults(defaultConfig);
 		}
 	}
@@ -62,15 +58,7 @@ public class MinionConfig {
 		try {
 			this.getConfig().save(this.configFile);
 		} catch (IOException e) {
-			plugin
-				.getLogger()
-				.log(
-					Level.SEVERE,
-					Minions.getPrefix() +
-					"File could not be saved in: " +
-					this.configFile,
-					e
-				);
+			plugin.getLogger().log(Level.SEVERE, Minions.getPrefix() + "File could not be saved in: " + this.configFile, e);
 		}
 	}
 
@@ -128,44 +116,22 @@ public class MinionConfig {
 	 * @param errorField Field in which the error was found
 	 */
 	public void wrongConfig(String errorField) {
-		this.plugin.getLogger()
-			.log(
-				Level.SEVERE,
-				Minions.getPrefix() +
-				ChatColor.RED +
-				"A config error was found on minion \"" +
-				errorField +
-				"\""
-			);
-		this.plugin.getLogger()
-			.log(
-				Level.SEVERE,
-				ChatColor.RED +
-				"The config has been restored to the default config and a new file called minions_old.yml was created with your old config."
-			);
-		this.plugin.getLogger()
-			.log(Level.SEVERE, ChatColor.RED + "Please fix this and try again");
+		this.plugin.getLogger().log(Level.SEVERE, Minions.getPrefix() + ChatColor.RED + "A config error was found on minion \"" + errorField + "\"");
+		this.plugin.getLogger().log(Level.SEVERE, ChatColor.RED + "The config has been restored to the default config and a new file called minions_old.yml was created with your old config.");
+		this.plugin.getLogger().log(Level.SEVERE, ChatColor.RED + "Please fix this and try again");
 		try {
 			Files.move(
-				Path.of(
-					this.plugin.getDataFolder().getAbsolutePath() +
-					"/minions.yml"
-				),
-				Path.of(
-					this.plugin.getDataFolder().getAbsolutePath() +
-					"/minions_old.yml"
-				),
+				Path.of(this.plugin.getDataFolder().getAbsolutePath() +"/minions.yml"),
+				Path.of(this.plugin.getDataFolder().getAbsolutePath() +"/minions_old.yml"),
 				StandardCopyOption.REPLACE_EXISTING
 			);
 			this.saveDefaultConfig();
 			this.reloadConfig();
 		} catch (Exception e) {
-			this.plugin.getLogger()
-				.log(
-					Level.SEVERE,
-					"Error renaming config file. Maintaining old file. \nError message: " +
-					e.getMessage()
-				);
+			this.plugin.getLogger().log(Level.SEVERE,
+				"Error renaming config file. Maintaining old file. \nError message: " +
+				e.getMessage()
+			);
 		}
 	}
 }
