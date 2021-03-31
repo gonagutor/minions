@@ -1,6 +1,8 @@
 package com.gonagutor.minions.configs;
 
+import com.gonagutor.minions.Minions;
 import com.gonagutor.minions.api.BaseMinion;
+import com.gonagutor.minions.utils.UtilLibrary;
 import com.google.common.collect.ImmutableMap;
 import java.util.List;
 import java.util.Map;
@@ -14,11 +16,13 @@ import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.persistence.PersistentDataType;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -229,15 +233,31 @@ public class MinionData implements ConfigurationSerializable {
 	 * @return Skull ItemStack
 	 */
 	@SuppressWarnings("deprecation")
-	public ItemStack toSkull() {
+	public ItemStack toSkull(int level) {
 		Boolean isUrl =
 			skullOwner.contains("http://") || skullOwner.contains("https://");
 		ItemStack item = new ItemStack(Material.PLAYER_HEAD, 1);
 		if (isUrl) item = CustomSkull.skullFromImage(item, skullOwner);
 		SkullMeta meta = (SkullMeta) item.getItemMeta();
 
-		meta.setDisplayName(this.itemName);
+		meta.setDisplayName(
+			this.itemName + " level " + UtilLibrary.intToRoman(level)
+		);
 		meta.setLore(this.itemLore);
+		NamespacedKey minionType = new NamespacedKey(
+			Minions.getPlugin(Minions.class),
+			"minion_type"
+		);
+		meta
+			.getPersistentDataContainer()
+			.set(minionType, PersistentDataType.STRING, this.minionType);
+		NamespacedKey minionLevel = new NamespacedKey(
+			Minions.getPlugin(Minions.class),
+			"minion_level"
+		);
+		meta
+			.getPersistentDataContainer()
+			.set(minionLevel, PersistentDataType.INTEGER, level);
 		if (!isUrl) meta.setOwningPlayer(
 			Bukkit.getOfflinePlayer(this.skullOwner)
 		);

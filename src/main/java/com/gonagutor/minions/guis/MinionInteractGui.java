@@ -64,7 +64,7 @@ public class MinionInteractGui implements Listener {
 						);
 						amount = 0;
 					}
-				} else if (slots > minion.getLevel()) inv.setItem(
+				} else if (slots >= minion.getMaxSlots()) inv.setItem(
 					i,
 					createGuiItem(Material.WHITE_STAINED_GLASS_PANE, " ")
 				); else inv.setItem(i, new ItemStack(Material.AIR));
@@ -80,7 +80,7 @@ public class MinionInteractGui implements Listener {
 				"§7show the ideal layout"
 			)
 		);
-		inv.setItem(4, minion.getMinion().getEquipment().getHelmet());
+		inv.setItem(4, minion.getMinionData().toSkull(minion.getLevel()));
 		inv.setItem(
 			5,
 			createGuiItem(
@@ -187,7 +187,7 @@ public class MinionInteractGui implements Listener {
 			e
 				.getWhoClicked()
 				.getInventory()
-				.addItem(minion.getMinion().getEquipment().getHelmet());
+				.addItem(minion.getMinionData().toSkull(minion.getLevel()));
 			return;
 		}
 
@@ -221,7 +221,7 @@ public class MinionInteractGui implements Listener {
 					.getWhoClicked()
 					.sendMessage(
 						Minions.getPrefix() +
-						"You don't have enought free space on your inventory"
+						"You don't have enough free space on your inventory"
 					);
 				e.getWhoClicked().playEffect(EntityEffect.VILLAGER_ANGRY);
 			}

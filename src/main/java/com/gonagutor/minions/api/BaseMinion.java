@@ -3,6 +3,7 @@ package com.gonagutor.minions.api;
 import com.gonagutor.minions.Minions;
 import com.gonagutor.minions.configs.JSONMinionData;
 import com.gonagutor.minions.configs.MinionData;
+import com.gonagutor.minions.utils.UtilLibrary;
 import com.google.common.collect.ImmutableMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -12,6 +13,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.ArmorStand.LockType;
@@ -25,7 +27,6 @@ import org.bukkit.util.Vector;
 public abstract class BaseMinion {
 
 	@Getter
-	@Setter
 	private ArmorStand minion;
 
 	@Getter
@@ -63,10 +64,19 @@ public abstract class BaseMinion {
 	@Setter
 	private UUID playerUuid;
 
+	@Getter
+	@Setter
+	private Material[] idealLayout = new Material[24];
+
 	/**
 	 * This must be super(ed) by any minion extension
 	 *
-	 * @param newMinionLoc
+	 * @param loc Where is the minion located
+	 * @param mData Data of the minion
+	 * @param level Level of the minion
+	 * @param ite How many items does the minion have
+	 * @param mon How much money does the minion have in it's inventory
+	 * @param player UUID of the player who placed the minion
 	 */
 	public BaseMinion(
 		Location loc,
@@ -77,7 +87,11 @@ public abstract class BaseMinion {
 		UUID player
 	) {
 		this.setIdentifier(this.getClass().getName());
-		this.setMenuTitle(mData.getMinionName() + " level " + level);
+		this.setMenuTitle(
+				mData.getMinionName() +
+				" level " +
+				UtilLibrary.intToRoman(level)
+			);
 		this.setMinionData(mData);
 		this.minionLocation = loc;
 		this.setLevel(level);
@@ -120,7 +134,7 @@ public abstract class BaseMinion {
 				EquipmentSlot.FEET,
 				LockType.REMOVING_OR_CHANGING
 			);
-		minion.getEquipment().setHelmet(minionData.toSkull());
+		minion.getEquipment().setHelmet(minionData.toSkull(1));
 
 		if (this.getMinionData().getChest() != null) minion
 			.getEquipment()
@@ -134,6 +148,15 @@ public abstract class BaseMinion {
 		if (this.getMinionData().getTool() != null) minion
 			.getEquipment()
 			.setItemInMainHand(this.getMinionData().getTool());
+	}
+
+	public void setMinionName(String name) {
+		this.getMinion().setCustomName(name);
+		this.getMinion().setCustomNameVisible(true);
+	}
+
+	public void clearMinionName() {
+		this.getMinion().setCustomNameVisible(false);
 	}
 
 	/**
@@ -170,9 +193,58 @@ public abstract class BaseMinion {
 		return (blocks);
 	}
 
-	/* -------------- Animation Utilities -------------- */
-	/* This section contains minion animation utilities */
+	/**
+	 * Compares ideal layout to influence blocks. This probably will need to be
+	 * reimplemented because I believe a Set does not mantain order
+	 *
+	 * @return Whether the layout is ideal (true or false)
+	 */
+	public boolean isLayoutIdeal() {
+		Set<Block> influenceBlocks = getInfluenceBlocks();
+		int i = 0;
 
+		for (Block b : influenceBlocks) {
+			if (b.getType() != this.getIdealLayout()[i]) return false;
+			i++;
+		}
+		return true;
+	}
+
+	/**
+	 * Get minion allowed max slots
+	 *
+	 * @return Slots of the minion based on the level (1 to 15)
+	 */
+	public int getMaxSlots() {
+		switch (this.getLevel()) {
+			case 1:
+				return 1;
+			case 2:
+				return 3;
+			case 3:
+				return 3;
+			case 4:
+				return 6;
+			case 5:
+				return 6;
+			case 6:
+				return 9;
+			case 7:
+				return 9;
+			case 8:
+				return 12;
+			case 9:
+				return 12;
+			case 10:
+				return 15;
+			default:
+				return 0;
+		}
+	}
+
+	/* -------------- Animation Utilities -------------- */
+	/* This section contains minion animation utilities  */
+	/* ------------------------------------------------- */
 	/**
 	 * Restores ArmourStand pose abruptly with no animation
 	 */
@@ -294,6 +366,7 @@ public abstract class BaseMinion {
 
 	/* ----------- Serialization Utilities ----------- */
 	/* This section contains methods for serialization */
+	/* ----------------------------------------------- */
 
 	/**
 	 * Deserialize a map to get the minion data.

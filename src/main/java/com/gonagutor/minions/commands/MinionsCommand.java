@@ -46,8 +46,12 @@ public class MinionsCommand implements TabExecutor {
 		return (true);
 	}
 
-	public static void givePlayerMinion(MinionData minion, Player giveTo) {
-		giveTo.getInventory().addItem(minion.toSkull());
+	public static void givePlayerMinion(
+		MinionData minion,
+		Player giveTo,
+		int level
+	) {
+		giveTo.getInventory().addItem(minion.toSkull(level));
 		giveTo.sendMessage(
 			Minions.getPrefix() +
 			ChatColor.GREEN +
@@ -79,6 +83,10 @@ public class MinionsCommand implements TabExecutor {
 			return ret;
 		}
 		if (args.length == 3) {
+			ret.add("<Level 0-10>");
+			return ret;
+		}
+		if (args.length == 4) {
 			for (Player p : Bukkit.getOnlinePlayers()) ret.add(p.getName());
 			return ret;
 		}
@@ -101,16 +109,24 @@ public class MinionsCommand implements TabExecutor {
 						MinionData mData = (MinionData) minionManager
 							.getMinionList()
 							.toArray()[Integer.parseInt(args[1])];
-						if (args.length < 3) {
-							givePlayerMinion(mData, (Player) sender);
+						if (args.length < 4) {
+							givePlayerMinion(
+								mData,
+								(Player) sender,
+								Integer.parseInt(args[2])
+							);
 							return true;
 						}
-						Player sendTo = Bukkit.getPlayerExact(args[2]);
+						Player sendTo = Bukkit.getPlayerExact(args[3]);
 						if (sendTo != null) {
-							givePlayerMinion(mData, sendTo);
+							givePlayerMinion(
+								mData,
+								sendTo,
+								Integer.parseInt(args[2])
+							);
 							((Player) sender).sendMessage(
 									Minions.getPrefix() +
-									args[2] +
+									args[3] +
 									" received " +
 									mData.getItemName()
 								);
@@ -120,7 +136,7 @@ public class MinionsCommand implements TabExecutor {
 								Minions.getPrefix() +
 								ChatColor.RED +
 								"Could not find player named " +
-								args[2]
+								args[3]
 							);
 					} catch (Exception e) {
 						e.printStackTrace();

@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -47,8 +48,11 @@ public class BlockMinion extends BaseMinion {
 					return;
 				}
 			}
-			if (minion.getItems() < 64 * 3 * 5) {
-				Block b = (Block) influenceBlocks.toArray()[(int) Math.floor(
+			if (minion.getItems() < 64 * getMaxSlots()) {
+				if (!minion.isLayoutIdeal()) minion.setMinionName(
+					ChatColor.YELLOW + "Layout is not ideal"
+				); else minion.clearMinionName();
+				final Block b = (Block) influenceBlocks.toArray()[(int) Math.floor(
 						influenceBlocks.size() * Math.random()
 					)];
 				minion.playOutBreakAnimation();
@@ -59,7 +63,10 @@ public class BlockMinion extends BaseMinion {
 
 					@Override
 					public void run() {
-						if (b.getType() == Material.AIR) {
+						if (
+							b.getType() == Material.AIR ||
+							b.getType() != minion.blockType
+						) {
 							cancel();
 							return;
 						}
@@ -76,6 +83,10 @@ public class BlockMinion extends BaseMinion {
 					}
 				}
 				.runTaskTimer(Minions.getPlugin(Minions.class), 0, 2);
+			} else {
+				minion.setMinionName(
+					ChatColor.RED + "Not enough room on inventory"
+				);
 			}
 		}
 	}
@@ -100,6 +111,9 @@ public class BlockMinion extends BaseMinion {
 	) {
 		super(loc, mData, level, ite, mon, player);
 		this.blockType = mData.getBlockMaterial();
+		Material[] iLayout = new Material[24];
+		for (int i = 0; i < 24; i++) iLayout[i] = Material.AIR;
+		this.setIdealLayout(iLayout);
 		this.setMinionTask(
 				new UpdateNeeded(this)
 				.runTaskTimer(
@@ -108,5 +122,20 @@ public class BlockMinion extends BaseMinion {
 						40 * (10 / this.getLevel())
 					)
 			);
+	}
+
+	@Override
+	public boolean isLayoutIdeal() {
+		Set<Block> influenceBlocks = getInfluenceBlocks();
+		int i = 0;
+
+		for (Block b : influenceBlocks) {
+			if (
+				b.getType() != this.getIdealLayout()[i] &&
+				b.getType() != this.blockType
+			) return false;
+			i++;
+		}
+		return true;
 	}
 }
